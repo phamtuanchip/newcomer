@@ -1,0 +1,20 @@
+<%
+	import org.exoplatform.webui.core.UIPopupWindow;
+	import org.exoplatform.portal.webui.util.Util;
+	import org.exoplatform.social.core.service.LinkProvider;
+%>
+
+<%
+	def pcontext = Util.getPortalRequestContext();
+	def jsManager = pcontext.getJavascriptManager();
+	def searchBookAction = uicomponent.event("Search");
+%>
+<div style="float:rignt;">
+
+			<% uiform.begin() %>
+				<%uiform.renderField(uicomponent.getChildren().get(0)); %>
+				<input type="button" name="btnSearch" value="Search" onclick="$searchBookAction" class="Action"/>
+			<% uiform.end() %>
+			
+</div>
+<div style="clear:left;"><span></span></div>

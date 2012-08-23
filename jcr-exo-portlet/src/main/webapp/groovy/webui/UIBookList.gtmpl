@@ -1,0 +1,66 @@
+<%
+	import org.exoplatform.webui.core.UIPopupWindow;
+	import org.exoplatform.portal.webui.util.Util;
+	import org.exoplatform.social.core.service.LinkProvider;
+%>
+
+<%
+	def pcontext = Util.getPortalRequestContext();
+	def jsManager = pcontext.getJavascriptManager();
+%>
+
+<div id="$uicomponent.id">
+			
+			<table border="1">
+			
+	<%
+		def addBookAction = uicomponent.event("Add")
+		def bookList = uicomponent.getBooks();
+		
+		if (bookList.isEmpty()) {
+	%>
+		<div>No resource</div>
+	<%
+		} else {
+	%>
+			
+					<tr>
+						<th>Book Name</th>
+						<th>Book Category</th>
+						<th>Action</th>
+					</tr>
+				<%
+					for (book in bookList) {
+						def bookId = book.getBookId();
+						def name = book.getName();
+						def category = book.getCategory().toString();
+						def content = book.getContent();
+						def deleteBookAction = uicomponent.event("Delete", bookId) + "; return false"
+						def editBookAction = uicomponent.event("Edit", bookId)
+				%>
+						<tr>
+							<td>
+								$name
+							</td>
+							<td align="center">
+								$category
+							</td>
+							<td align="center">
+								<input type="button" name="btnEdit" value="Edit" onclick="$editBookAction" class="Action"/>
+								<input type="button" name="btnDelete" value="Delete" onclick="$deleteBookAction" class="Action"/>
+							</td>
+						</tr>
+				<%	
+					}
+				%>
+						
+	<%
+		}
+	%>
+						<tr>
+							<td colspan="3" align="center">
+								<input type="button" name="btnAdd" value="Add" onclick="$addBookAction" class="Action"/>
+							</td>
+						</tr>
+			</table>
+</div>

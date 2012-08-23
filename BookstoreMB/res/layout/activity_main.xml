@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:background="@drawable/custombitmap"
+    android:id="@+id/main">
+
+    <ListView
+        android:id="@android:id/list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawSelectorOnTop="false"
+        android:layout_marginLeft="13px"
+		android:layout_marginTop="24px"
+		android:layout_marginRight="18px"
+		android:layout_marginBottom="24px"
+		android:dividerHeight="-2dip">
+	</ListView>
+	
+    <Button android:id="@+id/btnReturn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/btncancel"
+        android:layout_gravity="center_horizontal"/>
+	
+</LinearLayout>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" 
+    android:orientation="vertical"
+    android:background="@drawable/custombitmap" >
+    
+    <LinearLayout android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:drawSelectorOnTop="false"
+        android:layout_marginLeft="13px"
+		android:layout_marginTop="24px"
+		android:layout_marginRight="18px"
+        android:orientation="vertical"
+        android:background="@drawable/cellbottom">
+        
+        <TextView android:id="@+id/name"
+	    	android:layout_width="wrap_content"
+	    	android:layout_height="wrap_content"
+	    	android:textColor="#040404"
+			android:typeface="sans"
+        	android:textSize="15dip"
+        	android:textStyle="bold"/>
+        
+        <TextView android:id="@+id/category"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:textColor="#343434"
+	        android:textSize="10dip"
+	        android:layout_marginTop="1dip"/>
+        
+        <TextView android:id="@+id/author"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:textColor="#343434"
+	        android:textSize="10dip"
+	        android:layout_marginTop="1dip"/>
+        
+    </LinearLayout>
+    
+    <LinearLayout android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:drawSelectorOnTop="false"
+        android:background="@drawable/cellbottom"
+        android:layout_marginLeft="13px"
+		android:layout_marginRight="18px"
+		android:layout_marginBottom="24px"
+        android:orientation="vertical">
+        
+        <TextView android:id="@+id/content"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="top"
+   			android:padding="5dip"
+   			android:scrollbars="vertical"
+   			android:fadingEdge="vertical"
+   			android:capitalize="sentences"/>
+        
+    </LinearLayout>
+    
+</LinearLayout>
