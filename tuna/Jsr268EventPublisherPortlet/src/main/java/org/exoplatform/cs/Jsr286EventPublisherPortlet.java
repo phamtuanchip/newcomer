@@ -1,20 +1,22 @@
 package org.exoplatform.cs;
 
 /*
- * Copyright 2001-2005 The Apache Software Foundation.
+ * Copyright (C) 2003-2012 eXo Platform SAS.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 
 import java.io.IOException;
 import javax.portlet.ActionRequest;
@@ -26,27 +28,31 @@ import javax.portlet.RenderMode;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.xml.namespace.QName;
-// what the fck is that??
+
+/**
+ * Created by The eXo Platform SAS
+ * Author : eXoPlatform
+ *          tuna@exoplatform.com
+ * Sept 18, 2012  
+ */
 
 public class Jsr286EventPublisherPortlet extends GenericPortlet {
 
-    @RenderMode(name="help")
+    @RenderMode(name="help") // when having a help page request click on Help, give back help.jsp -- MAPPING purpose - tested
     protected void doHelp( RenderRequest request, RenderResponse response )
         throws PortletException, IOException {
     	getPortletContext().getRequestDispatcher("/xhtml/help.jsp").include(request, response);
-        //helpView.include( request, response );
     }
     
     @RenderMode(name="view") // this annotation indicates that the render is for viewing purpose
     public void viewNormal( RenderRequest request, RenderResponse response )
         throws PortletException, IOException {
-
+    	
     	getPortletContext().getRequestDispatcher("/xhtml/view.jsp").forward(request, response);
     }
 
     /**
      * This method processes the "savecontact" action.
-     * The form parameters are added to the Hashtable object that will be sent as the event value
      */
     @ProcessAction(name="savecontact")
     public void saveContact(ActionRequest request, ActionResponse response) throws PortletException, IOException {
@@ -54,12 +60,13 @@ public class Jsr286EventPublisherPortlet extends GenericPortlet {
         // Get form parameters
         String name = request.getParameter("name");
         String email = request.getParameter("email");
- 
+        
         //send event
         String contactInfo = name + "," + email;
  
         // Send the event using the appropriate QName
-        response.setEvent(new QName("http:mycompany.com/events", "contactInfo"), contactInfo);
+        response.setEvent(new QName("http://exoplatform.com/events", "contactInfo"), contactInfo);
+        // send contactInfo event to http://exoplatform.com/events, ListenerPortlet will retrieve the event from this
     }
 
 }

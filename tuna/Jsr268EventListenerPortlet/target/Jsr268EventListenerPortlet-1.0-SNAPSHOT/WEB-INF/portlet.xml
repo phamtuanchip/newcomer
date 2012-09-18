@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<portlet-app version="1.0" xmlns="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd">
+ 
+<portlet>
+    <portlet-name>Jsr286EventListenerPortlet</portlet-name>
+    <portlet-class>org.exoplatform.cs.Jsr286EventListenerPortlet</portlet-class>
+	    
+    <init-param>
+		<description>view jsp</description>
+	        <name>jspView</name>
+		<value>/xhtml/view.jsp</value>
+	</init-param>
+    
+    <supports>
+        <mime-type>text/html</mime-type>
+        <portlet-mode>VIEW</portlet-mode>
+    </supports>
+    <supported-locale>en</supported-locale>
+ 
+	<portlet-info>
+        <title>Jsr286 Event Listener Portlet</title>
+        <short-title>Jsr286EventListenerPortlet</short-title>
+        <keywords>Jsr286EventListenerPortlet</keywords>
+    </portlet-info>
+    <supported-processing-event>
+        <qname xmlns:x="http://exoplatform.com/events">x:contactInfo</qname>
+    </supported-processing-event>
+</portlet>
+ 
+    <!-- <default-namespace>ns.Jsr286EventListenerPortlet</default-namespace> -->
+ 
+    <event-definition>
+        <qname xmlns:x="http://exoplatform.com/events">x:contactInfo</qname>
+        <value-type>java.lang.String</value-type>
+    </event-definition>
+ 
+</portlet-app>
