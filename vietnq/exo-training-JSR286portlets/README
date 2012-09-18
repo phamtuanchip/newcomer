@@ -1,0 +1,10 @@
+Porlets communicating demo
+----------------------------------------------------------------
+JSR286EventPublisher Portlet sends event and parameters to 
+JSR286EventListener. 
+------------------------------------------------------------------
+To deploy portlets into GateIn: 
++) go to each directory and run command:
+mvn install
++) copy .war files in target folder into $PATH_TO_GATEIN/packaging/pkg/target/tomcat/webapps
++) run gatein and then import and add them to a page 
