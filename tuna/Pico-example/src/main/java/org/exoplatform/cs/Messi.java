@@ -22,7 +22,8 @@ package org.exoplatform.cs;
  *          tuna@exoplatform.com
  * Sep 19, 2012  
  */
-public interface Footballer {
-  
-  public void play();
+public class Messi implements Footballer {
+  public void play() {
+    System.out.println("CRo is kicking the ball");
+  }
 }

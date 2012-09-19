@@ -32,9 +32,4 @@ public class FootballMatch {
   public void kickOff() {
     footballer.play();
   }
-  
-  public static void main(String[] args) {
-    FootballMatch footballMatch = new FootballMatch(new Footballer());
-    footballMatch.kickOff();
-  }
 }
