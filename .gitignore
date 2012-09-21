@@ -4,16 +4,17 @@
 
 
 # /
-/.settings
-/.project
-/.classpath
+*.settings
+*.project
+*.classpath
 /.idea
 /*.iml
 /*.ipr
 /*.iws
 /temp
-/bin
-/target
+bin
+target
+*.patch
 
 #
 # Default excludes
