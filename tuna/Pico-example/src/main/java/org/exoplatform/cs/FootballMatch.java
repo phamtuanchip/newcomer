@@ -16,6 +16,9 @@
  */
 package org.exoplatform.cs;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 /**
  * Created by The eXo Platform SAS
  * Author : Anh-Tu NGUYEN
@@ -23,13 +26,23 @@ package org.exoplatform.cs;
  * Sep 19, 2012  
  */
 public class FootballMatch {
-  private Footballer footballer;
+  private ArrayList<Footballer> footballers = new ArrayList<Footballer>();
   
-  public FootballMatch(Footballer footballer) {
-    this.footballer = footballer;
+  public FootballMatch() { super(); }
+  
+  public String kickOff() {
+    Iterator<Footballer> it = footballers.iterator();
+    String match = new String("- Kick off the match -");
+    
+    while (it.hasNext()) {
+      match = match + it.next().play();    
+    }
+    
+    return match;
   }
   
-  public void kickOff() {
-    footballer.play();
+  public void addFootballer(Footballer footballer) {
+    footballers.add(footballer);
   }
+  
 }

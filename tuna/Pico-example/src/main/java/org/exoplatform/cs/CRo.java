@@ -23,7 +23,7 @@ package org.exoplatform.cs;
  * Sep 19, 2012  
  */
 public class CRo implements Footballer {
-  public void play() {
-    System.out.println("CRo is kicking the ball");
+  public String play() {
+    return new String("- CRo is kicking the ball -");
   }
 }

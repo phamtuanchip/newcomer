@@ -20,10 +20,28 @@ package org.exoplatform.cs;
  * Created by The eXo Platform SAS
  * Author : Anh-Tu NGUYEN
  *          tuna@exoplatform.com
- * Sep 19, 2012  
+ * Sep 21, 2012  
  */
-public class Messi implements Footballer {
-  public String play() {
-    return new String("- Messi is kicking the ball -");
+import static org.junit.Assert.assertEquals;
+
+import org.exoplatform.container.*;
+import org.junit.Test;
+
+public class ExoContainerTest {
+  
+  @Test
+  public void shouldGetSimpleComponent() throws Exception {
+    StandaloneContainer container = StandaloneContainer.getInstance();;    
+    Drinkable water = (Drinkable) 
+      container.getComponentInstanceOfType(Drinkable.class);
+    assertEquals(water.drunk(), "drink water"); 
+  }
+  
+  @Test
+  public void shouldUseExternalConfigToLoadComponent() throws Exception { 
+    StandaloneContainer container = StandaloneContainer.getInstance();;    
+    Juice juice = (Juice)
+        container.getComponentInstance(Juice.class);
+    assertEquals(juice.drunk(), "drink orange juice"); 
   }
 }

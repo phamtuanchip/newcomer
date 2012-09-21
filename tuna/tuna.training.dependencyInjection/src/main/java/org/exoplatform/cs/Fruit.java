@@ -16,14 +16,14 @@
  */
 package org.exoplatform.cs;
 
+import org.exoplatform.container.component.ComponentPlugin;
+
 /**
  * Created by The eXo Platform SAS
  * Author : Anh-Tu NGUYEN
  *          tuna@exoplatform.com
- * Sep 19, 2012  
+ * Sep 21, 2012  
  */
-public class Messi implements Footballer {
-  public String play() {
-    return new String("- Messi is kicking the ball -");
-  }
+public interface Fruit extends ComponentPlugin {
+  public String name();
 }

@@ -20,10 +20,30 @@ package org.exoplatform.cs;
  * Created by The eXo Platform SAS
  * Author : Anh-Tu NGUYEN
  *          tuna@exoplatform.com
- * Sep 19, 2012  
+ * Sep 21, 2012  
  */
-public class Messi implements Footballer {
-  public String play() {
-    return new String("- Messi is kicking the ball -");
+public class Orange implements Fruit {
+  public String name() {
+    return "orange";
+  }
+
+  public String getDescription() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  public String getName() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  public void setDescription(String arg0) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  public void setName(String arg0) {
+    // TODO Auto-generated method stub
+    
   }
 }

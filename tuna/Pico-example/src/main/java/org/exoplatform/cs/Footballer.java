@@ -23,6 +23,5 @@ package org.exoplatform.cs;
  * Sep 19, 2012  
  */
 public interface Footballer {
-  
-  public void play();
+  public String play();
 }

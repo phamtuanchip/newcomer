@@ -20,10 +20,16 @@ package org.exoplatform.cs;
  * Created by The eXo Platform SAS
  * Author : Anh-Tu NGUYEN
  *          tuna@exoplatform.com
- * Sep 19, 2012  
+ * Sep 21, 2012  
  */
-public class Messi implements Footballer {
-  public String play() {
-    return new String("- Messi is kicking the ball -");
+public class DependOnApple {
+  private Apple apple;
+  
+  public DependOnApple(Apple apple) {
+    this.apple = apple;
+  }
+  
+  public String say() {
+    return "i depend on apple";
   }
 }
