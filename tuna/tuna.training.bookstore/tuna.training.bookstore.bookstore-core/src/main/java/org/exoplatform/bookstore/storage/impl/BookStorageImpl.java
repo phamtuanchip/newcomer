@@ -89,6 +89,9 @@ public class BookStorageImpl implements BookStorage
   {
     log.info("--- insert Book ---");
     
+    log.info("Book: " + bookToInsert.getIsbn() 
+             + " -- " + bookToInsert.getTitle());
+    
     if (hasBook(bookToInsert.getIsbn())) throw 
       new DuplicateBookException("Duplicate book " + bookToInsert.getIsbn());
     
@@ -107,7 +110,9 @@ public class BookStorageImpl implements BookStorage
   
   public Author addAuthor(Author authorToAdd) throws Exception
   {
-    log.info("--- add author ----");
+    log.info("--- add Author ----");
+    
+    log.info("Author " + authorToAdd.getName());
     
     if (hasAuthor(authorToAdd.getName())) throw
       new DuplicateAuthorException("Duplicate author " + authorToAdd.getName());
@@ -118,18 +123,21 @@ public class BookStorageImpl implements BookStorage
     authorNode.setProperty("exo:authorname", authorToAdd.getName());
       
     authorToAdd.setId(authorNode.getUUID().toString());  
-    log.info("author node uuid " + authorNode.getUUID().toString());
+    
+    log.info("Author id " + authorNode.getUUID().toString());
     
     session.save();
     return authorToAdd;
   }
   
-  public Book getBookByIsbn(String Isbn) throws Exception
+  public Book getBookByIsbn(String isbn) throws Exception
   {
     log.info("--- get book by isbn ---");
     
+    log.info("Book isbn " + isbn);
+    
     String searchBookIsbnSQLQuery =
-        "SELECT * FROM nt:base WHERE exo:isbn = '" + Isbn + "'";
+        "SELECT * FROM nt:base WHERE exo:isbn = '" + isbn + "'";
     
     Workspace ws = session.getWorkspace();
     QueryManager qm = ws.getQueryManager();
@@ -170,7 +178,6 @@ public class BookStorageImpl implements BookStorage
   public boolean hasBook(String isbn) throws Exception  
   {
     log.info("--- has book with isbn ---");
-
     
     String searchBookIsbnSQLQuery =
         "SELECT * FROM nt:base WHERE exo:isbn = '" + isbn + "'";
@@ -215,6 +222,8 @@ public class BookStorageImpl implements BookStorage
   public Author getAuthorByName(String authorName) throws Exception 
   {
     log.info("--- get author by name ---");
+    
+    log.info("Author name " + authorName);
     
     String searchAuthorSQLQuery =
         "SELECT * FROM nt:base WHERE exo:authorname = '" + authorName + "'";
@@ -276,7 +285,6 @@ public class BookStorageImpl implements BookStorage
     log.info(" result size: " + booksNode.getNodes().getSize());
     
     List<Book> allBooks = new ArrayList<Book>();
-    
     if (iterator.hasNext() == false) return null;
     
     while (iterator.hasNext()) 
@@ -284,5 +292,34 @@ public class BookStorageImpl implements BookStorage
     
     return allBooks;
   }
+
+  public List<Book> getBooksFromAuthor(Author anAuthor) throws Exception
+  {
+    log.info("--- get books from author ---");
+    
+    log.info("Author " + anAuthor.getName());
+      
+    String selectBookSQLQuery =
+        "SELECT * FROM nt:base WHERE exo:author = '" + anAuthor.getId() + "'";
+    
+    Workspace ws = session.getWorkspace();
+    QueryManager qm = ws.getQueryManager();
+    Query query = qm.createQuery( selectBookSQLQuery, Query.SQL) ;
+    
+    QueryResult result = query.execute();
+    NodeIterator iterator = result.getNodes();
+    
+    log.info(" result size: " + result.getNodes().getSize());
+    
+    List<Book> books = new ArrayList<Book>();
+    if (iterator.hasNext() == false) return null;
+    
+    while (iterator.hasNext()) 
+      books.add(restoreBookFromNode(iterator.nextNode()));
+    
+    return books;
+    
+  }
+  
 
 }

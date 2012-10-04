@@ -46,4 +46,6 @@ public interface BookStorage {
   public void removeBook(String isbn) throws Exception;
   
   public List<Book> getAllBooks() throws Exception;
+  
+  public List<Book> getBooksFromAuthor(Author anAuthor) throws Exception;
 }

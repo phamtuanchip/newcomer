@@ -73,6 +73,9 @@ public class BookStorageTest extends TestCase {
      BookstoreConstant.BOOKSTORE_REPOSITORY
     );
     
+    log.info("user id   " + session.getUserID());
+    log.info("workspace " + session.getWorkspace().getName());
+    
     assertEquals(session.getUserID(), BookstoreConstant.USERNAME_REPOSITORY);
     assertEquals(session.getWorkspace().getName(), BookstoreConstant.BOOKSTORE_REPOSITORY);
 
@@ -263,7 +266,7 @@ public class BookStorageTest extends TestCase {
   
   public void testGetAllBook()
   {
-    log.info("--- test Getting Book ---");
+    log.info("--- test Getting All Books ---");
     
     List<Book> allBooks = new ArrayList<Book>();
     
@@ -287,5 +290,32 @@ public class BookStorageTest extends TestCase {
     }
     
     log.info("--- test Getting Book successfully ---\n");
+  }
+  
+  public void testGetBooksFromAuthor() 
+  {
+    log.info("--- test Getting Books From Author ---");
+    
+    Author hoChiMinh = new Author("Ho Chi Minh");
+    
+    try 
+    {
+      bookStorage.addAuthor(hoChiMinh);
+      bookStorage.insertBook(new Book("1234567800000", "Nhat Ki Trong Tu", hoChiMinh));
+      bookStorage.insertBook(new Book("1234567800001", "Tuyen Ngon Doc Lap", hoChiMinh));
+      List<Book> hoChiMinhBooks = bookStorage.getBooksFromAuthor(hoChiMinh);
+      
+      Iterator<Book> it = hoChiMinhBooks.iterator();
+      while (it.hasNext()) 
+        log.info("Book title " + ((Book) it.next()).getTitle());
+      
+      assertEquals(new Integer(hoChiMinhBooks.size()), new Integer(2));
+    }
+    catch (Exception e)
+    {
+      log.error("getting book from author exception " + e.getMessage());
+    }
+  
+    log.info("--- test Getting Books From Author successfully ---\n");
   }
 }
