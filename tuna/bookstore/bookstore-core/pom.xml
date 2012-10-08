@@ -1,0 +1,110 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  
+  <parent>
+    <groupId>org.exoplatform.bookstore</groupId>
+    <artifactId>bookstore</artifactId>
+    <version>0.1-SNAPSHOT</version>   
+  </parent>
+  
+  <groupId>org.exoplatform.bookstore</groupId>
+  <artifactId>bookstore-core</artifactId>
+  <version>0.1-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>Bookstore-core</name>
+  <url>http://maven.apache.org</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencies>
+
+    <dependency>
+      <groupId>junit</groupId>
+    
+      <artifactId>junit</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.hsqldb</groupId>
+      <artifactId>hsqldb</artifactId>
+      <version>${org.hsqldb.version}</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <version>${org.slf4j.version}</version>
+      <scope>test</scope>
+    </dependency>
+    
+    <!-- JCR -->
+    <dependency>
+      <groupId>org.exoplatform.jcr</groupId>
+      <artifactId>exo.jcr.component.core</artifactId>
+      <version>${org.exoplatform.jcr.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.exoplatform.jcr</groupId>
+      <artifactId>exo.jcr.component.ext</artifactId>
+      <version>${org.exoplatform.jcr.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    
+    <!-- kernel and portal -->
+    <dependency>
+      <groupId>org.exoplatform.kernel</groupId>
+      <artifactId>exo.kernel.component.cache</artifactId>
+      <version>${org.exoplatform.kernel.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.exoplatform.portal</groupId>
+      <artifactId>exo.portal.component.test.core</artifactId>
+      <version>${org.exoplatform.portal.version}</version>
+      <scope>test</scope>
+    </dependency>
+    
+  </dependencies>
+  
+  
+  <!-- 
+  from this output of tomcat server, we see that tomcat load dependency from jar in lib folder
+  Oct 8, 2012 2:38:03 AM org.exoplatform.container.configuration.ConfigurationManagerImpl addConfiguration
+  INFO: Add configuration jar:file:/Users/tuna/java/eXoProjects/exodev/cs/packaging/pkg/target/tomcat/lib/
+  exo.kernel.component.cache-2.3.9-GA-SNAPSHOT.jar!/conf/portal/configuration.xml
+  
+  also, the config should be put under /conf/portal/configuration.xml and it also mean they use portal container
+  
+  Oct 8, 2012 2:38:03 AM org.exoplatform.container.configuration.ConfigurationManagerImpl addConfiguration
+  INFO: Add configuration jar:file:/Users/tuna/java/eXoProjects/exodev/cs/packaging/pkg/target/tomcat/lib/
+  bookstore-core-0.1-SNAPSHOT.jar!/conf/portal/configuration.xml
+   
+  // that why we have to change our maven pom.xml file to copy our conf file to the .jar  
+   -->
+  <build>
+    <resources>
+      <resource>
+        <!-- this is the path where the files are copied under the jar - it says root path -->
+        <targetPath>./</targetPath>
+        <filtering>false</filtering>
+        <!-- this is the folder which are copied -->
+        <directory>${basedir}/src/test/resources</directory>
+        <includes>
+          <include>**/*</include>
+        </includes>
+      </resource>
+    </resources>
+  </build>
+  
+</project>
