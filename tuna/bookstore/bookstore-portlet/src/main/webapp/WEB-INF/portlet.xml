@@ -41,15 +41,16 @@
             <mime-type>text/html</mime-type>
         </supports>
         <supported-locale>en</supported-locale>
-        <!--  
-        <resource-bundle>locale.portlet.BookstorePortlet</resource-bundle>
-        -->
         
+        <resource-bundle>locale.portlet.bookstore.BookstorePortlet</resource-bundle>
+        
+        <!--  
         <portlet-info>
             <title>Bookstore Portlet</title>
             <short-title>Bookstore Portlet</short-title>
             <keywords>bookstore</keywords>
         </portlet-info>
+        -->
         
         <!--  why should we add template here
         <portlet-preferences>

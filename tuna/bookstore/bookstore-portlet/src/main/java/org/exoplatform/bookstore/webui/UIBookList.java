@@ -16,16 +16,29 @@
  */
 package org.exoplatform.bookstore.webui;
 
+import java.util.Iterator;
 import java.util.List;
 
+import org.exoplatform.bookstore.portlet.UIBookstorePortlet;
 import org.exoplatform.bookstore.service.ComponentLocator;
 import org.exoplatform.bookstore.storage.BookStorage;
 import org.exoplatform.bookstore.storage.impl.BookStorageImpl;
+import org.exoplatform.bookstore.webui.action.UIPopupAction;
+import org.exoplatform.bookstore.webui.popup.UIBookDetailForm;
+import org.exoplatform.portal.webui.page.UIPageBrowser;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.webui.application.WebuiApplication;
+import org.exoplatform.webui.application.WebuiRequestContext;
+import org.exoplatform.webui.application.portlet.PortletRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
+import org.exoplatform.webui.config.annotation.EventConfig;
+import org.exoplatform.webui.core.UIPopupWindow;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
+import org.exoplatform.webui.event.Event;
+import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.form.UIForm;
+import org.exoplatform.webui.form.UIFormPopupWindow;
 import org.exoplatform.bookstore.domain.Author;
 import org.exoplatform.bookstore.domain.Book;
 import org.exoplatform.container.ExoContainer;
@@ -40,13 +53,42 @@ import org.exoplatform.container.PortalContainer;
  */
 @ComponentConfig(
   lifecycle = UIFormLifecycle.class,
-  template = "app:/groovy/bookstore/webui/UIBookList.gtmpl"
+  template  = "app:/groovy/bookstore/webui/UIBookList.gtmpl",
+  events    = {
+    @EventConfig(listeners = UIBookList.BookDetailPopupActionListener.class), 
+    @EventConfig(listeners = UIBookList.AuthorDetailPopupActionListener.class) 
+  } 
 )
 
 public class UIBookList extends UIForm 
 {
   private static Log log = ExoLogger.getExoLogger(UIBookList.class);
     
+  public UIBookList() 
+  {
+    log.info("--- Constructor UIBookList ---");
+        
+  }
+  
+  public void processRender(WebuiRequestContext context) throws Exception {
+    
+    log.info("\n List of events configured: \n"); 
+    
+    Iterator it = (Iterator) this.getComponentConfig().getEvents().iterator();
+    
+    while (it.hasNext()) {
+      org.exoplatform.webui.config.Event event = 
+          (org.exoplatform.webui.config.Event) it.next();
+      log.info("\n event: " + event.getName() + "\n");
+      log.info("\n event listener: " + 
+          this.getComponentConfig().getUIComponentEventListeners(event.getName()).toString() +
+      "\n");
+    }
+    
+    super.processRender(context);
+  }
+  
+
   public static List<Book> getAllBooks() 
   {
     log.info("--- get All Books ---");
@@ -95,7 +137,7 @@ public class UIBookList extends UIForm
   public static BookStorage initBookstore(BookStorage bookStorage)
   {
     log.info("--- initBookstore ---");
-  
+    
     try {
     
       Author martinFowler = new Author("Martin Fowler");
@@ -118,7 +160,71 @@ public class UIBookList extends UIForm
     {
       log.error("init bookstore exception " + e.getMessage());
     }
-  
+    
     return bookStorage;
+  }
+  
+  // set up Event Listener - naming convention <event-name>ActionListener
+  // - who throws Event = who creates Action => UI part:
+  // uicomponent.event("eventName")
+  // - register the event and the event listener
+  // - create the listener - implements execute method
+  
+  /**
+   * from calendar: UICalendars.java - UICalendat is UIForm 
+   *  UICalendars uiComponent = event.getSource(); - get source of event
+   *  UICalendarPortlet uiCalendarPortlet = uiComponent.getAncestorOfType(UICalendarPortlet.class) ; - get portlet
+   *  UIPopupAction popupAction = uiCalendarPortlet.getChild(UIPopupAction.class) ; - get UIPopupAction class
+      popupAction.deActivate() ;
+      UIQuickAddEvent uiQuickAddEvent = popupAction.activate(UIQuickAddEvent.class, 600) ;
+      uiQuickAddEvent.setEvent(true) ;  
+          uiQuickAddEvent.setId("UIQuickAddEvent") ;
+   * @author tuna
+   *
+   */
+  public static class BookDetailPopupActionListener extends EventListener<UIBookList>
+  {
+    public void execute(Event<UIBookList> event) throws Exception
+    {
+      log.info("--- execute BookDetailPopup event---");
+      
+      log.info("event received");
+      
+      UIBookList uiBookList      = event.getSource();
+      UIBookstorePortlet portlet = uiBookList.getAncestorOfType(UIBookstorePortlet.class);
+      UIPopupAction popupAction  = portlet.getChild(UIPopupAction.class);
+      log.info("popup action " + popupAction.getId());
+      
+      UIPopupWindow popup        = popupAction.getChild(UIPopupWindow.class);
+      log.info("popup windows " + popupAction.getId());
+
+      popup.setRendered(true);
+      popup.setResizable(true);
+      popup.setShow(true);
+    }
+  }
+  
+  public static class AuthorDetailPopupActionListener extends EventListener<UIBookList>
+  {
+    public void execute(Event<UIBookList> event) throws Exception
+    {
+      log.info("--- execute AuthorDetailPopup event---");
+      
+      log.info("event received");
+      
+      UIBookList uiBookList      = event.getSource();
+      UIBookstorePortlet portlet = uiBookList.getAncestorOfType(UIBookstorePortlet.class);
+      UIPopupAction popupAction  = portlet.getChild(UIPopupAction.class);
+      log.info("popup action " + popupAction.getId());
+      popupAction.deActivate();
+      
+      popupAction.activate(UIBookDetailForm.class, 600);
+      UIPopupWindow popup        = popupAction.getChild(UIPopupWindow.class);
+      log.info("popup windows " + popupAction.getId());
+
+      popup.setRendered(true);
+      popup.setResizable(true);
+      popup.setShow(true);
+    }
   }
 }

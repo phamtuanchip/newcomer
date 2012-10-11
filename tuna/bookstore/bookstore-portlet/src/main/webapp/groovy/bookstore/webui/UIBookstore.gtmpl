@@ -18,6 +18,6 @@
 -->
 
 <!-- why use class="UIManageAllSpace" here -->
-<div id="<% uicomponent.getId(); %>">
+<div class="<%=uicomponent.getId() %>">
 	 <% uicomponent.renderChildren(); %>
 </div>

@@ -17,7 +17,11 @@
 package org.exoplatform.bookstore.portlet;
 
 import org.exoplatform.bookstore.webui.UIBookstore;
+import org.exoplatform.bookstore.webui.action.UIPopupAction;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
+import org.exoplatform.webui.core.UIPopupWindow;
 import org.exoplatform.webui.core.UIPortletApplication;
 import org.exoplatform.webui.core.lifecycle.UIApplicationLifecycle;
 
@@ -30,12 +34,23 @@ import org.exoplatform.webui.core.lifecycle.UIApplicationLifecycle;
 
 @ComponentConfig(
   lifecycle = UIApplicationLifecycle.class,
-  template = "app:/groovy/bookstore/portlet/BookstorePortlet.gtmpl"
+  template  = "app:/groovy/bookstore/webui/UIBookstorePortlet.gtmpl"
 )
-public class UIBookstorePortlet extends UIPortletApplication {
+public class UIBookstorePortlet extends UIPortletApplication 
+{
+  public static Log log = ExoLogger.getExoLogger(UIBookstorePortlet.class);
+  
+  public UIBookstorePortlet() throws Exception 
+  {
+    log.info("--- UIBookstorePortlet constructor ---");
 
-  public UIBookstorePortlet() throws Exception {
+    log.info("add UIBookstore as the main container");
     addChild(UIBookstore.class, null, null);
+    
+    log.info("add UIPopupAction to manage Popup");
+    UIPopupAction uiPopup =  addChild(UIPopupAction.class, null, null);
+    uiPopup.setId("UIBookstorePopupAction");
+    uiPopup.getChild(UIPopupWindow.class).setId("UIBookstorePopupWindow");
   }
   
 }
