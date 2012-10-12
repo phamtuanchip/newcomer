@@ -16,6 +16,8 @@
  */
 package org.exoplatform.bookstore.domain;
 
+import org.exoplatform.services.jcr.util.IdGenerator;
+
 /**
  * Created by The eXo Platform SAS
  * Author : Anh-Tu NGUYEN
@@ -24,7 +26,7 @@ package org.exoplatform.bookstore.domain;
  */
 public class Book {
   
-  private String isbn;
+  private String isbn; // used for book identification
   
   private String title;
   
@@ -45,22 +47,20 @@ public class Book {
     return isbn;
   }
 
-  public void setIsbn(String isbn) 
+  public void setIsbn(String isbn)
   {
     this.isbn = isbn;
   }
-
+  
   public String getTitle() 
   {
     return title;
   }
 
-  
   public void setTitle(String title) 
   {
     this.title = title;
   }
-
   
   public Author getAuthor() 
   {
@@ -72,6 +72,4 @@ public class Book {
   {
     this.author = author;
   }
-  
-  
 }

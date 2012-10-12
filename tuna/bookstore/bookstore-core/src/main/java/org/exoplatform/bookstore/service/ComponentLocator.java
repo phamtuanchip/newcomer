@@ -17,13 +17,19 @@
 package org.exoplatform.bookstore.service;
 
 import javax.jcr.Node;
+import javax.jcr.PathNotFoundException;
 import javax.jcr.Repository;
+import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
+import javax.jcr.lock.LockException;
+import javax.jcr.nodetype.ConstraintViolationException;
+import javax.jcr.version.VersionException;
 
 import org.exoplatform.bookstore.common.BookstoreConstant;
 import org.exoplatform.bookstore.domain.Author;
 import org.exoplatform.bookstore.domain.Book;
+import org.exoplatform.bookstore.domain.NoAuthor;
 import org.exoplatform.bookstore.storage.BookStorage;
 import org.exoplatform.bookstore.storage.impl.BookStorageImpl;
 import org.exoplatform.container.ExoContainer;
@@ -40,7 +46,10 @@ import org.exoplatform.services.log.Log;
  *          tuna@exoplatform.com
  * Oct 2, 2012  
  */
+
 public class ComponentLocator {
+  
+  private static final Log log = (Log) ExoLogger.getExoLogger(ComponentLocator.class);
   
   private static ExoContainer eContainer = null;
   
@@ -49,9 +58,7 @@ public class ComponentLocator {
   private static Node rootNode = null;
   
   private static BookStorage bookStorage = null;
-  
-  private static final Log log = (Log) ExoLogger.getExoLogger(ComponentLocator.class);
-  
+    
   public static void setContainer(ExoContainer container)
   {
     eContainer = container;
@@ -150,11 +157,85 @@ public class ComponentLocator {
     {
       log.error("--- getRootNode exception ---" + e.getMessage());
     }
-    
-    if (rootNode == null) 
-      log.info("--- error: rootNode null ---");
       
     return rootNode;
   }
+   
   
+  public static void initDefaultNodes() 
+  {
+    log.info("--- init default nodes ---");
+    
+    try 
+    {
+      Node bookstoreNode = getRootNode().addNode("exo:bookstore");
+      bookstoreNode.addNode("exo:books");
+      Node authorsNode   = bookstoreNode.addNode("exo:authors");
+      Node noAuthorNode  = authorsNode.addNode("exo:author");
+      noAuthorNode.addMixin("mix:referenceable");
+      noAuthorNode.setProperty("exo:authorname", "No Author");
+      log.info("NoAuthor Id " + noAuthorNode.getUUID());
+      NoAuthor.id = noAuthorNode.getUUID();
+      
+      session.save();
+    }
+    catch (Exception e) 
+    {
+      log.error("--- init default node exception ---" + e.getMessage());
+    }
+  }
+  
+  
+  public static BookStorage initBookstore()
+  {
+    log.info("--- initBookstore ---");
+    
+    try {
+      BookStorage bookStorage = (BookStorage) getContainer()
+          .getComponentInstanceOfType(BookStorage.class);
+      
+      Author martinFowler = new Author("Martin Fowler");
+      Author ericEvans    = new Author("Eric Evans");
+    
+      bookStorage.addAuthor(martinFowler);
+      bookStorage.addAuthor(ericEvans);
+    
+      bookStorage.insertBook(
+        new Book("1201999914000", "Design Pattern", martinFowler)
+      );
+      bookStorage.insertBook(
+        new Book("1201999914111", "Domain Driven Design", ericEvans)
+      );
+      bookStorage.insertBook(
+        new Book("1201999914222", "Head First Java", null)
+      );
+    }
+      catch (Exception e)
+    {
+      log.error("init bookstore exception " + e.getMessage());
+    }
+    
+    return bookStorage;
+  }
+  
+  
+  public static void emptyDefaultNodes()
+  {
+    log.info("--- empty default nodes ---");
+
+    try 
+    {
+      Node bookstoreNode = getRootNode().getNode("exo:bookstore");
+      bookstoreNode.remove();
+      getSession().save();
+    } 
+    catch (PathNotFoundException e) 
+    {
+      log.error("node exo:bookstore does not exist " + e.getMessage());
+    }
+    catch (RepositoryException e)
+    {
+      log.error("repository exception " + e.getMessage());
+    }
+  }
 }

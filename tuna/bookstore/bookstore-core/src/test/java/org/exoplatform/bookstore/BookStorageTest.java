@@ -118,6 +118,8 @@ public class BookStorageTest extends TestCase
     
     log.info("--- test Insert Book ----");
     
+    ComponentLocator.initDefaultNodes();
+    
     try 
     {
       bookStorage.insertBook( new Book("9781451648539", "Steve Jobs", null) );

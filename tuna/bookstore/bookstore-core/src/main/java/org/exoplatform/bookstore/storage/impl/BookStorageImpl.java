@@ -36,6 +36,7 @@ import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -59,33 +60,10 @@ public class BookStorageImpl implements BookStorage
     
     session  = ComponentLocator.getSession();
     rootNode = ComponentLocator.getRootNode();  
-    initDefaultNode();      
   }
   
-  private void initDefaultNode() 
-  {
-    log.info("--- init default nodes ---");
-    
-    try 
-    {
-      Node bookstoreNode = rootNode.addNode("exo:bookstore");
-      bookstoreNode.addNode("exo:books");
-      Node authorsNode   = bookstoreNode.addNode("exo:authors");
-      Node noAuthorNode  = authorsNode.addNode("exo:author");
-      noAuthorNode.addMixin("mix:referenceable");
-      noAuthorNode.setProperty("exo:authorname", "No Author");
-      log.info("NoAuthor Id " + noAuthorNode.getUUID());
-      NoAuthor.id = noAuthorNode.getUUID();
-      
-      session.save();
-    }
-    catch (Exception e) 
-    {
-      log.error("--- init default node exception ---" + e.getMessage());
-    }
-  }
   
-  public void insertBook(Book bookToInsert) throws Exception
+  public void insertBook(Book bookToInsert) throws DuplicateBookException, Exception
   {
     log.info("--- insert Book ---");
     
@@ -100,7 +78,6 @@ public class BookStorageImpl implements BookStorage
     Node bookNode  = booksNode.addNode("exo:book");
     bookNode.setProperty("exo:isbn"  , bookToInsert.getIsbn());
     bookNode.setProperty("exo:title" , bookToInsert.getTitle());  
-    
     bookNode.setProperty("exo:author", bookToInsert.getAuthor().getId() );
     
     session.save();  
@@ -108,7 +85,7 @@ public class BookStorageImpl implements BookStorage
   }
 
   
-  public Author addAuthor(Author authorToAdd) throws Exception
+  public Author addAuthor(Author authorToAdd) throws DuplicateAuthorException, Exception
   {
     log.info("--- add Author ----");
     
@@ -317,8 +294,18 @@ public class BookStorageImpl implements BookStorage
     while (iterator.hasNext()) 
       books.add(restoreBookFromNode(iterator.nextNode()));
     
-    return books;
-    
+    return books;   
   }
   
+  
+  public void removeAllBooks() throws Exception
+  {
+    log.info("--- remove all books ---");
+    
+    List<Book> allBooks = getAllBooks();
+    if (allBooks == null) return;
+    
+    Iterator<Book> it = allBooks.iterator();
+    while (it.hasNext()) removeBook(it.next().getIsbn());    
+  }
 }

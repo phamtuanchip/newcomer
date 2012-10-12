@@ -123,4 +123,9 @@
     </dependency>  
       
   </dependencies>
+  
+  <!-- defines name of package -->
+  <build>
+    <finalName>bookstore</finalName>
+  </build>
 </project>

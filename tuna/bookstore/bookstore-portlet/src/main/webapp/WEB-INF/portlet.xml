@@ -40,8 +40,8 @@
         <supports>
             <mime-type>text/html</mime-type>
         </supports>
-        <supported-locale>en</supported-locale>
         
+        <supported-locale>en</supported-locale>
         <resource-bundle>locale.portlet.bookstore.BookstorePortlet</resource-bundle>
         
         <!--  

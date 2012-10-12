@@ -20,6 +20,8 @@ import java.util.List;
 
 import org.exoplatform.bookstore.domain.Author;
 import org.exoplatform.bookstore.domain.Book;
+import org.exoplatform.bookstore.exception.DuplicateAuthorException;
+import org.exoplatform.bookstore.exception.DuplicateBookException;
 
 
 /**
@@ -31,9 +33,9 @@ import org.exoplatform.bookstore.domain.Book;
 
 public interface BookStorage {
   
-  public void insertBook(Book bookToInsert) throws Exception;
+  public void insertBook(Book bookToInsert) throws DuplicateBookException, Exception;
     
-  public Author addAuthor(Author authorToAdd) throws Exception;
+  public Author addAuthor(Author authorToAdd) throws DuplicateAuthorException, Exception;
   
   public Book getBookByIsbn(String isbn) throws Exception;
   
@@ -48,5 +50,6 @@ public interface BookStorage {
   public List<Book> getAllBooks() throws Exception;
   
   public List<Book> getBooksFromAuthor(Author anAuthor) throws Exception;
-
+  
+  public void removeAllBooks() throws Exception;
 }

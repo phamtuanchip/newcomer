@@ -5,6 +5,8 @@
                   xmlns="http://www.gatein.org/xml/ns/gatein_resources_1_2"> 
                   
   <portlet-skin>
+    <!-- this is the package name war -->
+    <!-- important for css since tomcat uses package name to get resources -->
     <application-name>bookstore</application-name>
     <portlet-name>BookstorePortlet</portlet-name>
     <skin-name>Default</skin-name>

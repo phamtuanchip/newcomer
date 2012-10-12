@@ -16,7 +16,7 @@
  */
 package org.exoplatform.bookstore.portlet;
 
-import org.exoplatform.bookstore.webui.UIBookstore;
+import org.exoplatform.bookstore.webui.UIBookstoreContainer;
 import org.exoplatform.bookstore.webui.action.UIPopupAction;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -43,9 +43,9 @@ public class UIBookstorePortlet extends UIPortletApplication
   public UIBookstorePortlet() throws Exception 
   {
     log.info("--- UIBookstorePortlet constructor ---");
-
+    
     log.info("add UIBookstore as the main container");
-    addChild(UIBookstore.class, null, null);
+    addChild(UIBookstoreContainer.class, null, null);
     
     log.info("add UIPopupAction to manage Popup");
     UIPopupAction uiPopup =  addChild(UIPopupAction.class, null, null);
