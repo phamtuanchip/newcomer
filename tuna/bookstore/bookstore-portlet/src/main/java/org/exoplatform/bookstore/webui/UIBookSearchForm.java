@@ -62,7 +62,6 @@ public class UIBookSearchForm extends UIForm {
     {
       log.info("--- search action received ---");
       
-      
     }
     
   }

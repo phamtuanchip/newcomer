@@ -19,15 +19,13 @@ package org.exoplatform.bookstore.webui;
 import java.io.Writer;
 import java.util.List;
 
-import org.exoplatform.bookstore.domain.Author;
 import org.exoplatform.bookstore.domain.Book;
 import org.exoplatform.bookstore.service.ComponentLocator;
 import org.exoplatform.bookstore.storage.BookStorage;
+import org.exoplatform.bookstore.util.BookstoreUtil;
 import org.exoplatform.commons.utils.LazyPageList;
 import org.exoplatform.commons.utils.ListAccessImpl;
-import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
-import org.exoplatform.container.PortalContainer;
 import org.exoplatform.portal.webui.container.UIContainer;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -58,46 +56,19 @@ public class UIBookListManager extends UIContainer implements UIPopupComponent
 {
   private static final Log log = ExoLogger.getExoLogger(UIBookListManager.class); 
   
-  public static String[] BEAN_FIELD = {"title", "isbn", "author"};
+  public static String FIELD_TO_SEND_BY_AJAX = "isbn";
+
+  public static String[] FIELDS_TO_DISPLAY = {"title", "isbn", "author"};
   
-  public static String[] ACTION = {"Edit", "Delete"};
-  
+  public static String[] ACTIONS = {"Edit", "Delete"};
+    
   @Override
   public void activate() throws Exception {}
 
   @Override
   public void deActivate() throws Exception {}
   
-  public UIBookListManager() throws Exception 
-  {
-    log.info("--- UIBookListManager constructor ---");
-    
-    // set name to be found by resource bundle 
-    this.setName("UIBookListManager") ;
-
-    UIGrid uiBookList = addChild(UIGrid.class, null, "UIBookList");
-    // ui BookList to list all books
-    // uses title to update by ajax, title for book display, action are edit and delete
-    uiBookList.configure("isbn", BEAN_FIELD, ACTION);
-    
-    uiBookList.getUIPageIterator().setId("BookPageIterator");
-    
-    // init defaut data
-    ExoContainer eContainer = ExoContainerContext.getCurrentContainer();
-    // to get the current container, which is csdemo container
-    
-    log.info("Container name " + ((PortalContainer) eContainer).getName());
-    ComponentLocator.setContainer(eContainer);
-    ComponentLocator.emptyDefaultNodes();
-    ComponentLocator.initDefaultNodes();
-    ComponentLocator.initBookstore();
-    
-    // add category form to show book title and author
-    addChild(UIBookListForm.class, null, null);
-    updateGrid();
-  }
-  
-  // no template defined, uses processRender instead
+  @Override
   public void processRender(WebuiRequestContext context) throws Exception 
   {
     Writer w = context.getWriter();
@@ -106,7 +77,41 @@ public class UIBookListManager extends UIContainer implements UIPopupComponent
     w.write("</div>");
   }
   
-  public void updateGrid() throws Exception 
+  public UIBookListManager() throws Exception 
+  {
+    log.info("--- UIBookListManager constructor ---");
+        
+    this.setName("UIBookListManager") ;  
+    addComponentToListBooks();
+    addComponentToEditBook();    
+    initApplication();   
+    updateListBookComponent();
+  }
+  
+  private void addComponentToEditBook() throws Exception
+  {
+    addChild(UIBookEditForm.class, null, null);
+  }
+  
+  private void addComponentToListBooks() throws Exception
+  {
+    UIGrid componentThatListBooks = addChild(UIGrid.class, null, "UIBookList");
+    componentThatListBooks.configure(FIELD_TO_SEND_BY_AJAX, 
+                                     FIELDS_TO_DISPLAY, ACTIONS);
+    // set pagination 
+    componentThatListBooks.getUIPageIterator().setId("BookPageIterator");
+  }
+  
+  private void initApplication() 
+  {
+    ComponentLocator.setContainer(ExoContainerContext.getCurrentContainer());
+    ComponentLocator.emptyDefaultNodes();
+    ComponentLocator.initDefaultNodes();
+    ComponentLocator.initBookstore();
+  }
+  
+  
+  public void updateListBookComponent() throws Exception 
   {
     log.info("--- update Grid ---");
     
@@ -115,9 +120,9 @@ public class UIBookListManager extends UIContainer implements UIPopupComponent
     List<Book> allBooks = bookStorage.getAllBooks();
     
     // update UI list of books
-    UIGrid uiGrid = getChild(UIGrid.class) ; 
+    UIGrid listBooksComponent = getChild(UIGrid.class) ; 
     LazyPageList<Book> pageList = new LazyPageList<Book>(new ListAccessImpl<Book>(Book.class, allBooks), 10);
-    uiGrid.getUIPageIterator().setPageList(pageList) ;  
+    listBooksComponent.getUIPageIterator().setPageList(pageList) ;  
   }
   
   public long getCurrentPage() 
@@ -137,31 +142,25 @@ public class UIBookListManager extends UIContainer implements UIPopupComponent
   
   public void resetForm() 
   {
-    getChild(UIBookListForm.class).reset() ;
+    getChild(UIBookEditForm.class).reset() ;
   }
   
   
   static public class EditActionListener extends EventListener<UIBookListManager> 
-  {
+  {    
     public void execute(Event<UIBookListManager> event) throws Exception
     {
       log.info("--- edit book event received ---");
       
-      UIBookListManager uiManager = event.getSource() ;
-      UIBookListForm uiForm = uiManager.getChild(UIBookListForm.class); 
+      UIBookListManager listBookContainer = event.getSource();
       String bookIsbn = event.getRequestContext().getRequestParameter(OBJECTID) ;
-      
-      BookStorage bookStorage = (BookStorage) ComponentLocator.getContainer()
-          .getComponentInstanceOfType(BookStorage.class);
-      Book book = bookStorage.getBookByIsbn(bookIsbn);
-      
-      // update UIBookListForm
-      uiForm.setBookIsbn(bookIsbn);
-      uiForm.setBookTitle(book.getTitle());
-      uiForm.setAuthorName(book.getAuthor().getName());
-      
-      uiManager.updateGrid();
-      event.getRequestContext().addUIComponentToUpdateByAjax(uiManager);
+
+      UIBookEditForm editBookComponent = listBookContainer.getChild(UIBookEditForm.class); 
+      editBookComponent.updateUI(BookstoreUtil.getBookFromStorage(bookIsbn));
+            
+      listBookContainer.updateListBookComponent();
+      // update UI by JS
+      event.getRequestContext().addUIComponentToUpdateByAjax(listBookContainer);
     }
   }
   
@@ -171,16 +170,13 @@ public class UIBookListManager extends UIContainer implements UIPopupComponent
     {
       log.info("--- delete book event received ---");
       
-      UIBookListManager uiManager = event.getSource();
-      UIBookListForm uiForm = uiManager.getChild(UIBookListForm.class); 
+      UIBookListManager listBookContainer = event.getSource();
       String bookIsbn = event.getRequestContext().getRequestParameter(OBJECTID) ;
       
-      BookStorage bookStorage = (BookStorage) ComponentLocator.getContainer()
-          .getComponentInstanceOfType(BookStorage.class);
-      bookStorage.removeBook(bookIsbn);
+      BookstoreUtil.removeBookFromStorage(bookIsbn);
       
-      uiManager.updateGrid();
-      event.getRequestContext().addUIComponentToUpdateByAjax(uiManager);
+      listBookContainer.updateListBookComponent();
+      event.getRequestContext().addUIComponentToUpdateByAjax(listBookContainer);
     }
   }
   

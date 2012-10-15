@@ -14,22 +14,50 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.exoplatform.bookstore.webui;
+package org.exoplatform.cs;
 
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
+import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
 import org.exoplatform.webui.form.UIForm;
+import org.exoplatform.webui.form.UIFormInputInfo;
 
 /**
  * Created by The eXo Platform SAS
  * Author : Anh-Tu NGUYEN
  *          tuna@exoplatform.com
- * Oct 4, 2012  
+ * Sep 28, 2012  
  */
-@ComponentConfig(
-  lifecycle = UIFormLifecycle.class,
-  template  = "app:/groovy/bookstore/webui/UIBookSearch.gtmpl"
-)
-public class UIBookSearch extends UIForm {
 
+@ComponentConfig
+(
+   lifecycle = UIFormLifecycle.class,
+   template  = "app://groovy/webui/SimpleUIForm.gtmpl"
+)
+
+public class SimpleUIForm extends UIForm {
+  
+  private static final Log log = ExoLogger.getLogger(SimpleUIForm.class) ;
+  
+  public SimpleUIForm() throws Exception 
+  {
+    try {
+      this.addChild(new UIFormInputInfo(
+        "Input Info", "Input Info", "This is a message"                                         
+        ));
+    }
+    catch (Exception e) {
+      log.info("\n SimpleUIForm constructor exception: \n");
+    }
+  }
+  
+  @Override
+  public void processRender(WebuiRequestContext context) throws Exception {
+    
+    log.info("\n SimpleUIForm: processRender \n");
+    
+    super.processRender(context);
+  }
 }

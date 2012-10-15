@@ -16,6 +16,11 @@
  */
 package org.exoplatform.bookstore.util;
 
+import org.exoplatform.bookstore.domain.Author;
+import org.exoplatform.bookstore.domain.Book;
+import org.exoplatform.bookstore.service.ComponentLocator;
+import org.exoplatform.bookstore.storage.BookStorage;
+
 /**
  * Created by The eXo Platform SAS
  * Author : Anh-Tu NGUYEN
@@ -24,5 +29,29 @@ package org.exoplatform.bookstore.util;
  */
 public class BookstoreUtil {
   
+  private static BookStorage getBookStorage() throws Exception
+  {
+    return (BookStorage) ComponentLocator.getContainer()
+        .getComponentInstanceOfType(BookStorage.class);
+  }
   
+  public static Book getBookFromStorage(String bookIsbn) throws Exception
+  {
+    return getBookStorage().getBookByIsbn(bookIsbn);
+  }  
+  
+  public static void removeBookFromStorage(String bookIsbn) throws Exception
+  {
+    getBookStorage().removeBook(bookIsbn);
+  }
+  
+  public static Author getAuthorFromStorage(String authorName) throws Exception
+  {
+    return getBookStorage().getAuthorByName(authorName);
+  }
+  
+  public static void insertBookToStorage(Book bookToInsert) throws Exception
+  {
+    getBookStorage().insertBook(bookToInsert);
+  }
 }
