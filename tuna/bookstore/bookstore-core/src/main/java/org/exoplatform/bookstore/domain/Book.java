@@ -72,4 +72,19 @@ public class Book {
   {
     this.author = author;
   }
+  
+  @Override
+  public boolean equals(Object o)
+  {
+    if ( !(o instanceof Book) ) return false;
+    
+    if (getIsbn().equals( ((Book) o ).getIsbn() )) return true;
+    return false; 
+  }
+  
+  @Override
+  public int hashCode()
+  {
+    return Integer.parseInt(isbn);
+  }
 }

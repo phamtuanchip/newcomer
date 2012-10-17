@@ -32,6 +32,7 @@ import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.form.UIForm;
 import org.exoplatform.webui.form.UIFormStringInput;
+import org.exoplatform.webui.form.validator.SpecialCharacterValidator;
 
 /**
  * Created by The eXo Platform SAS
@@ -41,7 +42,7 @@ import org.exoplatform.webui.form.UIFormStringInput;
  */
 @ComponentConfig(
   lifecycle = UIFormLifecycle.class,
-  template  = "system:/groovy/webui/form/UIForm.gtmpl",
+  template  = "app:/groovy/bookstore/webui/UIForm.gtmpl",
   events    = 
     @EventConfig(listeners = UIBookEditForm.SaveActionListener.class)
 )
@@ -58,9 +59,14 @@ public class UIBookEditForm extends UIForm
       
   public UIBookEditForm() throws Exception 
   {
-    addUIFormInput(new UIFormStringInput(EDIT_BOOK_ISBN, EDIT_BOOK_ISBN, null));    
-    addUIFormInput(new UIFormStringInput(EDIT_BOOK_TITLE, EDIT_BOOK_TITLE, null));
-    addUIFormInput(new UIFormStringInput(EDIT_BOOK_AUTHOR, EDIT_BOOK_AUTHOR, null));    
+    addUIFormInput(new UIFormStringInput(EDIT_BOOK_ISBN, EDIT_BOOK_ISBN, null)
+        .addValidator(SpecialCharacterValidator.class));    
+    
+    addUIFormInput(new UIFormStringInput(EDIT_BOOK_TITLE, EDIT_BOOK_TITLE, null)
+        .addValidator(SpecialCharacterValidator.class));
+    
+    addUIFormInput(new UIFormStringInput(EDIT_BOOK_AUTHOR, EDIT_BOOK_AUTHOR, null)
+        .addValidator(SpecialCharacterValidator.class));    
   }
   
   protected String getBookIsbnFromUI() 
@@ -125,7 +131,8 @@ public class UIBookEditForm extends UIForm
         );
       }
       
-      ((UIBookListManager) editForm.getParent()).updateListBookComponent();
+      ((UIBookListManager) editForm.getParent())
+          .updateListBookComponent(BookstoreUtil.getAllBooksFromStorage());
       event.getRequestContext().addUIComponentToUpdateByAjax(editForm.getParent());
     }
     

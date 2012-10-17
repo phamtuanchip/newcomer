@@ -16,10 +16,19 @@
  */
 package org.exoplatform.bookstore.util;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import org.exoplatform.bookstore.domain.Author;
 import org.exoplatform.bookstore.domain.Book;
+import org.exoplatform.bookstore.exception.NoBookFoundException;
 import org.exoplatform.bookstore.service.ComponentLocator;
+import org.exoplatform.bookstore.specification.BookIsbnMatches;
+import org.exoplatform.bookstore.specification.BookSpecification;
+import org.exoplatform.bookstore.specification.BookTitleMatches;
 import org.exoplatform.bookstore.storage.BookStorage;
+import org.gatein.common.i18n.BundleName.Iterator;
 
 /**
  * Created by The eXo Platform SAS
@@ -53,5 +62,60 @@ public class BookstoreUtil {
   public static void insertBookToStorage(Book bookToInsert) throws Exception
   {
     getBookStorage().insertBook(bookToInsert);
+  }
+
+  public static Set<Book> getAllBooksFromStorage() throws Exception
+  {
+    return getBookStorage().getAllBooks();
+  }
+  
+  public static List<Book> searchBookWithTitleLike(String wordToSearch) throws Exception
+  {
+    return getBookStorage().searchBookWithTitleLike(wordToSearch);
+  }
+  
+  public static Set<Book> searchBookByAuthorName(String authorName, Integer resultLimit) throws Exception
+  {
+    return getBookStorage().searchBookByAuthorName(authorName, resultLimit);
+  }
+  
+  public static Set<Book> searchBookBySpecification(BookSpecification spec, Integer resultLimit) throws Exception
+  {
+    return getBookStorage().searchBookBySpecification(spec, resultLimit);
+  }
+  
+  public static List<Book> convertToList(Set<Book> books)
+  {
+    List<Book> listBooks = new ArrayList<Book>();
+    
+    java.util.Iterator<Book> it = books.iterator();
+    while(it.hasNext())
+      listBooks.add(it.next());
+    
+    return listBooks;
+  }
+  
+  public static Set<Book> searchBookByAllProperties(String wordToSearch) throws Exception
+  {
+    Set<Book> books = null;
+
+    try 
+    {
+      books = BookstoreUtil.searchBookBySpecification(
+        new BookTitleMatches(wordToSearch).or(new BookIsbnMatches(wordToSearch)), null);
+    }
+    catch (NoBookFoundException e)
+    {
+      // continue search
+      books = BookstoreUtil.searchBookByAuthorName(wordToSearch, null);
+      return books;
+    }
+    catch (Exception e)
+    {
+      return null;
+    }
+    
+    books.addAll(BookstoreUtil.searchBookByAuthorName(wordToSearch, null));
+    return books;
   }
 }

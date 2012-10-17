@@ -29,15 +29,21 @@ import org.exoplatform.bookstore.domain.Book;
 import org.exoplatform.bookstore.domain.NoAuthor;
 import org.exoplatform.bookstore.exception.DuplicateAuthorException;
 import org.exoplatform.bookstore.exception.DuplicateBookException;
+import org.exoplatform.bookstore.exception.NoBookFoundException;
 import org.exoplatform.bookstore.service.ComponentLocator;
+import org.exoplatform.bookstore.specification.AuthorIdMatches;
+import org.exoplatform.bookstore.specification.BookSpecification;
 import org.exoplatform.bookstore.storage.BookStorage;
 import org.exoplatform.container.ExoContainer;
+import org.exoplatform.services.jcr.impl.core.query.QueryImpl;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by The eXo Platform SAS
@@ -53,7 +59,7 @@ public class BookStorageImpl implements BookStorage
   private Session session;
   
   private Node rootNode;
-  
+    
   public BookStorageImpl()
   {
     log.info("--- init BookStorageImpl ---");
@@ -63,7 +69,7 @@ public class BookStorageImpl implements BookStorage
   }
   
   
-  public void insertBook(Book bookToInsert) throws DuplicateBookException, Exception
+  public BookStorage insertBook(Book bookToInsert) throws DuplicateBookException, Exception
   {
     log.info("--- insert Book ---");
     
@@ -82,10 +88,11 @@ public class BookStorageImpl implements BookStorage
     
     session.save();  
     log.info("--- insert Book: OK ---");
+    return this;
   }
 
   
-  public Author addAuthor(Author authorToAdd) throws DuplicateAuthorException, Exception
+  public BookStorage addAuthor(Author authorToAdd) throws DuplicateAuthorException, Exception
   {
     log.info("--- add Author ----");
     
@@ -104,7 +111,7 @@ public class BookStorageImpl implements BookStorage
     log.info("Author id " + authorNode.getUUID().toString());
     
     session.save();
-    return authorToAdd;
+    return this;
   }
   
   public Book getBookByIsbn(String isbn) throws Exception
@@ -116,9 +123,8 @@ public class BookStorageImpl implements BookStorage
     String searchBookIsbnSQLQuery =
         "SELECT * FROM nt:base WHERE exo:isbn = '" + isbn + "'";
     
-    Workspace ws = session.getWorkspace();
-    QueryManager qm = ws.getQueryManager();
-    Query query = qm.createQuery( searchBookIsbnSQLQuery, Query.SQL) ;
+    Query query = ComponentLocator.getQueryManager()
+        .createQuery( searchBookIsbnSQLQuery, Query.SQL) ;
     
     QueryResult result = query.execute();    
     NodeIterator iterator = result.getNodes();
@@ -159,9 +165,8 @@ public class BookStorageImpl implements BookStorage
     String searchBookIsbnSQLQuery =
         "SELECT * FROM nt:base WHERE exo:isbn = '" + isbn + "'";
     
-    Workspace ws = session.getWorkspace();
-    QueryManager qm = ws.getQueryManager();
-    Query query = qm.createQuery( searchBookIsbnSQLQuery, Query.SQL) ;
+    Query query = ComponentLocator.getQueryManager()
+        .createQuery( searchBookIsbnSQLQuery, Query.SQL) ;
     
     QueryResult result = query.execute();    
     NodeIterator iterator = result.getNodes();
@@ -183,9 +188,8 @@ public class BookStorageImpl implements BookStorage
     String searchBookIsbnSQLQuery =
         "SELECT * FROM nt:base WHERE exo:authorname = '" + authorName + "'";
     
-    Workspace ws = session.getWorkspace();
-    QueryManager qm = ws.getQueryManager();
-    Query query = qm.createQuery( searchBookIsbnSQLQuery, Query.SQL) ;
+    Query query = ComponentLocator.getQueryManager()
+        .createQuery( searchBookIsbnSQLQuery, Query.SQL) ;
     
     QueryResult result = query.execute();    
     NodeIterator iterator = result.getNodes();
@@ -205,9 +209,8 @@ public class BookStorageImpl implements BookStorage
     String searchAuthorSQLQuery =
         "SELECT * FROM nt:base WHERE exo:authorname = '" + authorName + "'";
     
-    Workspace ws = session.getWorkspace();
-    QueryManager qm = ws.getQueryManager();
-    Query query = qm.createQuery( searchAuthorSQLQuery, Query.SQL) ;
+    Query query = ComponentLocator.getQueryManager()
+        .createQuery( searchAuthorSQLQuery, Query.SQL ) ;
     
     QueryResult result = query.execute();    
     NodeIterator iterator = result.getNodes();
@@ -226,16 +229,15 @@ public class BookStorageImpl implements BookStorage
     return new NoAuthor();  
   }
   
-  public void removeBook(String isbn) throws Exception 
+  public BookStorage removeBook(String isbn) throws Exception 
   {
     log.info("--- remove book ---");
     
     String selectBookSQLQuery =
         "SELECT * FROM nt:base WHERE exo:isbn = '" + isbn + "'";
     
-    Workspace ws = session.getWorkspace();
-    QueryManager qm = ws.getQueryManager();
-    Query query = qm.createQuery( selectBookSQLQuery, Query.SQL) ;
+    Query query = ComponentLocator.getQueryManager()
+        .createQuery( selectBookSQLQuery, Query.SQL) ;
     
     QueryResult result = query.execute();
     NodeIterator iterator = result.getNodes();
@@ -248,11 +250,14 @@ public class BookStorageImpl implements BookStorage
       
       session.save();
       log.info("--- remove book: OK ---");
-    } 
+      return this;
+    }
+    
+    return this;
   }
   
-  
-  public List<Book> getAllBooks() throws Exception
+
+  public Set<Book> getAllBooks() throws Exception
   {
     log.info("--- get all books ---");
     
@@ -261,9 +266,10 @@ public class BookStorageImpl implements BookStorage
     
     log.info(" result size: " + booksNode.getNodes().getSize());
     
-    List<Book> allBooks = new ArrayList<Book>();
-    if (iterator.hasNext() == false) return null;
-    
+    Set<Book> allBooks = new HashSet<Book>();
+    if (iterator.hasNext() == false) 
+      throw new NoBookFoundException("No book found");
+      
     while (iterator.hasNext()) 
       allBooks.add(restoreBookFromNode(iterator.nextNode()));
     
@@ -279,9 +285,8 @@ public class BookStorageImpl implements BookStorage
     String selectBookSQLQuery =
         "SELECT * FROM nt:base WHERE exo:author = '" + anAuthor.getId() + "'";
     
-    Workspace ws = session.getWorkspace();
-    QueryManager qm = ws.getQueryManager();
-    Query query = qm.createQuery( selectBookSQLQuery, Query.SQL) ;
+    Query query = ComponentLocator.getQueryManager()
+        .createQuery( selectBookSQLQuery, Query.SQL) ;
     
     QueryResult result = query.execute();
     NodeIterator iterator = result.getNodes();
@@ -289,7 +294,8 @@ public class BookStorageImpl implements BookStorage
     log.info(" result size: " + result.getNodes().getSize());
     
     List<Book> books = new ArrayList<Book>();
-    if (iterator.hasNext() == false) return null;
+    if (iterator.hasNext() == false)       
+      throw new NoBookFoundException("No book found from author " + anAuthor);
     
     while (iterator.hasNext()) 
       books.add(restoreBookFromNode(iterator.nextNode()));
@@ -302,10 +308,108 @@ public class BookStorageImpl implements BookStorage
   {
     log.info("--- remove all books ---");
     
-    List<Book> allBooks = getAllBooks();
+    Set<Book> allBooks = getAllBooks();
     if (allBooks == null) return;
     
     Iterator<Book> it = allBooks.iterator();
     while (it.hasNext()) removeBook(it.next().getIsbn());    
+  }
+  
+  
+  public List<Book> searchBookWithTitleLike(String bookTitle) throws Exception
+  {
+    log.info("--- search book with title like ---");
+    
+    String selectBookSQLQuery =
+      "SELECT * FROM nt:base WHERE exo:title LIKE '%" + bookTitle + "%'";
+    
+    Query query = ComponentLocator.getQueryManager()
+        .createQuery( selectBookSQLQuery, Query.SQL) ;
+     
+    QueryResult result = query.execute();
+    NodeIterator iterator = result.getNodes();
+    
+    log.info(" result size: " + result.getNodes().getSize());
+    
+    List<Book> books = new ArrayList<Book>();
+    if (iterator.hasNext() == false) 
+      throw new NoBookFoundException("No book found with name like " + bookTitle); 
+    
+    while (iterator.hasNext()) 
+      books.add(restoreBookFromNode(iterator.nextNode()));
+    
+    return books;   
+  }
+
+  
+  public Set<Book> searchBookBySpecification(BookSpecification spec, Integer resultLimit) throws Exception
+  {
+    log.info("--- search book by specification ---");
+    
+    QueryImpl query = (QueryImpl) ComponentLocator.getQueryManager()
+        .createQuery(spec.getQuery(), Query.SQL);
+    
+    if (resultLimit != null) query.setLimit(resultLimit);
+    QueryResult result = query.execute();
+    NodeIterator iterator = result.getNodes();
+    
+    log.info(" result size: " + result.getNodes().getSize());
+    
+    Set<Book> books = new HashSet<Book>();
+    if (iterator.hasNext() == false) 
+      throw new NoBookFoundException("No book found"); 
+    
+    while (iterator.hasNext()) 
+      books.add(restoreBookFromNode(iterator.nextNode()));
+    
+    return books; 
+  }
+  
+  public Set<Author> getAuthorWithNameLike(String authorName) throws Exception 
+  {
+    log.info("--- get author with name like ---");
+    
+    log.info("Author name " + authorName);
+    
+    String searchAuthorSQLQuery =
+        "SELECT * FROM nt:base WHERE exo:authorname LIKE '%" + authorName + "%'";
+    
+    Query query = ComponentLocator.getQueryManager()
+        .createQuery( searchAuthorSQLQuery, Query.SQL ) ;
+    
+    QueryResult result = query.execute();    
+    NodeIterator iterator = result.getNodes();
+    log.info(" result size: " + result.getNodes().getSize());
+    
+    Set<Author> authors = new HashSet<Author>();
+    
+    while (iterator.hasNext()) 
+    {
+      Node node = iterator.nextNode();
+      if (node.getProperty("exo:authorname").getString().equals("No Author"))
+         authors.add(new NoAuthor());
+      
+      authors.add( new Author(node.getProperty("exo:authorname").getString(),
+                       node.getUUID().toString()));
+    }
+    
+    return authors;  
+  }
+  
+  public Set<Book> searchBookByAuthorName(String authorName, Integer resultLimit) throws Exception
+  {
+    log.info("--- search book by authorname ---");
+    
+    Set<Book> books = new HashSet<Book>();
+    
+    Set<Author> authors = getAuthorWithNameLike(authorName);
+    Iterator<Author> it = authors.iterator();
+    while (it.hasNext())
+    {
+      Author author = it.next();
+      books.addAll(searchBookBySpecification(new AuthorIdMatches(author.getId()), null));
+    }  
+    
+    return books;  
   }
 }

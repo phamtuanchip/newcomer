@@ -4,12 +4,31 @@
   action = uicomponent.event("Search") ;
   rcontext.getJavascriptManager().addJavascript('eXo.cs.Utils.captureInput("value") ;') ;
 %>
-<br/>
 <div class="UIBookSearchForm">
-  <div class="Input Search" onclick="$action">
-    <div class="SearchIcon" title="<%=uiform.getLabel('Search')%>" onclick="event.cancelBubble=true;">
-      <% uiform.renderChild("value") %>
-    </div>
-  </div>
+  <table>
+    <tbody>
+      <tr>
+        <td>
+          <p>Search book with</p>
+        </td>
+        <td>
+          <% uiform.renderChild("searchOptions") %>
+        </td>
+        <td>
+          <div class="Input Search" onclick="$action">
+            <div class="SearchIcon" title="<%=uiform.getLabel('Search')%>" onclick="event.cancelBubble=true;">
+              <% uiform.renderChild("value") %>
+            </div>
+         </div>
+        </td>
+      </tr>
+      <tr>
+        <td></td><td></td>
+        <td>
+          <% uiform.renderChild("message") %>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </div>
 <%uiform.end();%>

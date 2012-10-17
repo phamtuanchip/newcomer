@@ -17,8 +17,10 @@
 package org.exoplatform.bookstore;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
@@ -27,7 +29,10 @@ import org.exoplatform.bookstore.common.BookstoreConstant;
 import org.exoplatform.bookstore.domain.Author;
 import org.exoplatform.bookstore.domain.Book;
 import org.exoplatform.bookstore.exception.DuplicateBookException;
+import org.exoplatform.bookstore.exception.NoBookFoundException;
 import org.exoplatform.bookstore.service.ComponentLocator;
+import org.exoplatform.bookstore.specification.BookIsbnMatches;
+import org.exoplatform.bookstore.specification.BookTitleMatches;
 import org.exoplatform.bookstore.storage.BookStorage;
 import org.exoplatform.bookstore.storage.impl.BookStorageImpl;
 import org.exoplatform.container.ExoContainer;
@@ -122,8 +127,14 @@ public class BookStorageTest extends TestCase
     
     try 
     {
-      bookStorage.insertBook( new Book("9781451648539", "Steve Jobs", null) );
-      assertTrue(bookStorage.hasBook("9781451648539"));
+      bookStorage.insertBook( new Book("1000", "Steve Jobs", null) );    
+      Author vuTrongPhung = new Author("Vu Trong Phung");
+      bookStorage.addAuthor(vuTrongPhung)
+                 .insertBook(
+                     new Book("1001", "So Do", vuTrongPhung) );
+      
+      assertTrue(bookStorage.hasBook("1000"));
+      assertTrue(bookStorage.hasBook("1001"));
     }
     catch (Exception e) 
     {
@@ -139,7 +150,8 @@ public class BookStorageTest extends TestCase
     
     try 
     {
-      Author author = bookStorage.addAuthor( new Author("Walter Isaacson") );
+      bookStorage.addAuthor( new Author("Walter Isaacson") );
+      assertTrue(bookStorage.hasAuthor("Walter Isaacson"));
     }
     catch(Exception e)
     {
@@ -149,26 +161,7 @@ public class BookStorageTest extends TestCase
     log.info("--- test Adding Author successfully ---\n");
   }
   
-  public void testAddBookWithAuthor() 
-  {
-    log.info("--- test Adding Book with Author ---");
-    
-    try 
-    {
-      Author author = bookStorage.addAuthor(new Author("Vu Trong Phung"));
-      bookStorage.insertBook(
-        new Book("9781451648888", "So Do", author)
-      );
-    }
-    catch (Exception e) 
-    {
-      log.error("--- adding author exception ---" + e.getMessage());
-    }
-   
-    log.info("--- test Adding Book with Author successfully ---\n");
-  }
-  
-  
+ 
   public void testGetBookByIsbn() 
   {
     log.info("--- test Getting Book by Isbn ---");
@@ -177,14 +170,14 @@ public class BookStorageTest extends TestCase
     
     try 
     {
-      sodoBook = bookStorage.getBookByIsbn("9781451648888");
+      sodoBook = bookStorage.getBookByIsbn("1001");
     } 
     catch (Exception e) 
     {
       log.error(" finding book exception: " + e.getMessage());
     }
     
-    assertEquals(sodoBook.getIsbn(), new String("9781451648888") );
+    assertEquals(sodoBook.getIsbn(), new String("1001") );
     assertEquals(sodoBook.getAuthor().getName(), new String("Vu Trong Phung"));
     
     log.info("author name " + sodoBook.getAuthor().getName());
@@ -198,7 +191,7 @@ public class BookStorageTest extends TestCase
     
     try 
     {
-      assertTrue(bookStorage.hasBook(new String("9781451648539")));
+      assertTrue(bookStorage.hasBook(new String("1001")));
     } 
     catch (Exception e) 
     {
@@ -214,11 +207,11 @@ public class BookStorageTest extends TestCase
 
     try
     {
-      bookStorage.insertBook(new Book("9781451648539", "Steve", null));
+      bookStorage.insertBook(new Book("1000", "Steve", null));
     }
     catch (DuplicateBookException e)
     {
-      log.error("Dupplicate Book Exception: " + e.getMessage());
+      log.info("Dupplicate Book Exception: " + e.getMessage());
     }
     catch (Exception e)
     {
@@ -227,6 +220,7 @@ public class BookStorageTest extends TestCase
     
     log.info("--- test AddingDuplicateBook successfully ---\n");
   }
+  
   
   public void testAddingDuplicateAuthor()
   {
@@ -238,7 +232,7 @@ public class BookStorageTest extends TestCase
     }
     catch (Exception e)
     {
-      log.error("Dupplicate Author Exception: " + e.getMessage());
+      log.info("Dupplicate Author Exception: " + e.getMessage());
     }
     
     log.info("--- test AddingDuplicateAuthor successfully ---\n");
@@ -275,12 +269,12 @@ public class BookStorageTest extends TestCase
   {
     log.info("--- test Removing Book ---");
     
-    Book doraemon = new Book("1234567890123", "Doraemon", null);
+    Book doraemon = new Book("1002", "Doraemon", null);
     
     try 
     {
-      bookStorage.insertBook(doraemon);
-      bookStorage.removeBook(doraemon.getIsbn());
+      bookStorage.insertBook(doraemon)
+                 .removeBook(doraemon.getIsbn());
       assertFalse(bookStorage.hasBook(doraemon.getIsbn()));
     } 
     catch (Exception e) 
@@ -295,7 +289,7 @@ public class BookStorageTest extends TestCase
   {
     log.info("--- test Getting All Books ---");
     
-    List<Book> allBooks = new ArrayList<Book>();
+    Set<Book> allBooks = new HashSet<Book>();
     
     try
     {
@@ -327,9 +321,9 @@ public class BookStorageTest extends TestCase
     
     try 
     {
-      bookStorage.addAuthor(hoChiMinh);
-      bookStorage.insertBook(new Book("1234567800000", "Nhat Ki Trong Tu", hoChiMinh));
-      bookStorage.insertBook(new Book("1234567800001", "Tuyen Ngon Doc Lap", hoChiMinh));
+      bookStorage.addAuthor(hoChiMinh)
+                 .insertBook(new Book("1003", "Nhat Ki Trong Tu", hoChiMinh))
+                 .insertBook(new Book("1004", "Tuyen Ngon Doc Lap", hoChiMinh));
       List<Book> hoChiMinhBooks = bookStorage.getBooksFromAuthor(hoChiMinh);
       
       Iterator<Book> it = hoChiMinhBooks.iterator();
@@ -344,5 +338,82 @@ public class BookStorageTest extends TestCase
     }
   
     log.info("--- test Getting Books From Author successfully ---\n");
+  }
+  
+  public void testSearchBookWithTitleLike()
+  {
+    log.info("--- test searching books with title like ---");
+    
+    try
+    {
+      bookStorage.insertBook(new Book("1005", "Head First Java", null))
+                 .insertBook(new Book("1006", "Java Programming", null));
+      List<Book> javaBooks = bookStorage.searchBookWithTitleLike("Java");
+      assertEquals(new Integer(javaBooks.size()), new Integer(2));
+      
+      List<Book> noBooks = bookStorage.searchBookWithTitleLike("noBooksWithNameLikeThis");
+    }
+    catch (NoBookFoundException e)
+    {
+      log.info("NoBookFound exception: " + e.getMessage());
+    }
+    catch (Exception e)
+    {
+      log.error("searching book with title like exception " + e.getMessage()); 
+    }
+    
+    log.info("--- test searching books with title like: OK ---\n");
+  }
+  
+  public void testSearchBookBySpecification() 
+  {
+    log.info("--- test searching book by specification ---");
+    
+    try 
+    {
+      Set<Book> javaBooks = bookStorage.searchBookBySpecification(new BookTitleMatches("Java"), 1);
+      Set<Book> otherJavaBooks = bookStorage.searchBookBySpecification(
+                                             new BookTitleMatches("Java").or(new BookIsbnMatches("012")), null);
+      
+      assertEquals(new Integer(javaBooks.size()), new Integer(1));
+      assertTrue(((List<Book>) javaBooks).get(0).getTitle().contains("Java"));
+      assertEquals(new Integer(otherJavaBooks.size()), new Integer(2));
+    }
+    catch (NoBookFoundException e)
+    {
+      log.error("NoBookFound exception: " + e.getMessage());
+    }
+    catch (Exception e)
+    {
+      log.error("searching book by specification exception " + e.getMessage()); 
+    }
+    
+    log.info("--- test searching book by specification: OK ---\n");
+  }
+  
+  
+  public void testSearchingBookByAuthorName()
+  {
+    log.info("--- test searching book by authorname ---");
+    
+    try
+    {
+      Author exo = new Author("exo");
+      bookStorage.addAuthor(exo)
+                 .insertBook(new Book("1007", "Exo JCR", exo))
+                 .insertBook(new Book("1008", "Exo WebUI", exo));
+      Set<Book> exoBooks = bookStorage.searchBookByAuthorName("exo", null);
+      assertEquals(new Integer(exoBooks.size()), new Integer(2));
+    }
+    catch (NoBookFoundException e)
+    {
+      log.error("NoBookFound exception: " + e.getMessage());
+    }
+    catch (Exception e)
+    {
+      log.error("searching book by specification exception " + e.getMessage()); 
+    }
+    
+    log.info("--- test searching book by authorname: OK ---\n");
   }
 }

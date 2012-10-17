@@ -22,8 +22,10 @@ import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
+import javax.jcr.Workspace;
 import javax.jcr.lock.LockException;
 import javax.jcr.nodetype.ConstraintViolationException;
+import javax.jcr.query.QueryManager;
 import javax.jcr.version.VersionException;
 
 import org.exoplatform.bookstore.common.BookstoreConstant;
@@ -196,19 +198,15 @@ public class ComponentLocator {
       
       Author martinFowler = new Author("Martin Fowler");
       Author ericEvans    = new Author("Eric Evans");
-    
-      bookStorage.addAuthor(martinFowler);
-      bookStorage.addAuthor(ericEvans);
-    
-      bookStorage.insertBook(
-        new Book("1201999914000", "Design Pattern", martinFowler)
-      );
-      bookStorage.insertBook(
-        new Book("1201999914111", "Domain Driven Design", ericEvans)
-      );
-      bookStorage.insertBook(
-        new Book("1201999914222", "Head First Java", null)
-      );
+      Author exo          = new Author("Exo Platform");
+      
+      bookStorage.addAuthor(martinFowler).addAuthor(ericEvans).addAuthor(exo);
+      
+      bookStorage.insertBook(new Book("1000", "Design Pattern", martinFowler))
+                 .insertBook(new Book("1001", "Domain Driven Design", ericEvans))
+                 .insertBook(new Book("1002", "Head First Java", null))
+                 .insertBook(new Book("1003", "eXo JCR", exo))
+                 .insertBook(new Book("1004", "eXo WebUI", exo));
     }
       catch (Exception e)
     {
@@ -237,5 +235,10 @@ public class ComponentLocator {
     {
       log.error("repository exception " + e.getMessage());
     }
+  }
+  
+  public static QueryManager getQueryManager() throws Exception
+  {
+    return getSession().getWorkspace().getQueryManager();
   }
 }

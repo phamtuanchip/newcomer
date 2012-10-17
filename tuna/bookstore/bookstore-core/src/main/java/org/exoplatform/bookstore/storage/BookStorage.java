@@ -17,11 +17,13 @@
 package org.exoplatform.bookstore.storage;
 
 import java.util.List;
+import java.util.Set;
 
 import org.exoplatform.bookstore.domain.Author;
 import org.exoplatform.bookstore.domain.Book;
 import org.exoplatform.bookstore.exception.DuplicateAuthorException;
 import org.exoplatform.bookstore.exception.DuplicateBookException;
+import org.exoplatform.bookstore.specification.BookSpecification;
 
 
 /**
@@ -33,9 +35,9 @@ import org.exoplatform.bookstore.exception.DuplicateBookException;
 
 public interface BookStorage {
   
-  public void insertBook(Book bookToInsert) throws DuplicateBookException, Exception;
+  public BookStorage insertBook(Book bookToInsert) throws DuplicateBookException, Exception;
     
-  public Author addAuthor(Author authorToAdd) throws DuplicateAuthorException, Exception;
+  public BookStorage addAuthor(Author authorToAdd) throws DuplicateAuthorException, Exception;
   
   public Book getBookByIsbn(String isbn) throws Exception;
   
@@ -45,11 +47,19 @@ public interface BookStorage {
   
   public boolean hasAuthor(String authorName) throws Exception;
   
-  public void removeBook(String isbn) throws Exception;
+  public BookStorage removeBook(String isbn) throws Exception;
   
-  public List<Book> getAllBooks() throws Exception;
+  public Set<Book> getAllBooks() throws Exception;
   
   public List<Book> getBooksFromAuthor(Author anAuthor) throws Exception;
   
   public void removeAllBooks() throws Exception;
+  
+  public List<Book> searchBookWithTitleLike(String bookTitle) throws Exception; 
+  
+  public Set<Book> searchBookBySpecification(BookSpecification spec, Integer resultLimit) throws Exception;
+  
+  public Set<Author> getAuthorWithNameLike(String authorName) throws Exception;
+  
+  public Set<Book> searchBookByAuthorName(String authorName, Integer resultLimit) throws Exception;
 }

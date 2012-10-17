@@ -18,6 +18,7 @@ package org.exoplatform.bookstore.webui;
 
 import java.io.Writer;
 import java.util.List;
+import java.util.Set;
 
 import org.exoplatform.bookstore.domain.Book;
 import org.exoplatform.bookstore.service.ComponentLocator;
@@ -83,9 +84,10 @@ public class UIBookListManager extends UIContainer implements UIPopupComponent
         
     this.setName("UIBookListManager") ;  
     addComponentToListBooks();
-    addComponentToEditBook();    
+    addComponentToEditBook();  
+    addHomeButton();
     initApplication();   
-    updateListBookComponent();
+    updateListBookComponent(BookstoreUtil.getAllBooksFromStorage());
   }
   
   private void addComponentToEditBook() throws Exception
@@ -102,6 +104,21 @@ public class UIBookListManager extends UIContainer implements UIPopupComponent
     componentThatListBooks.getUIPageIterator().setId("BookPageIterator");
   }
   
+  private void addHomeButton() throws Exception 
+  {
+    addChild(UIBookButton.class, null, null).setRendered(false);
+  }
+
+  public void enableHomeButton() throws Exception
+  {
+    getChild(UIBookButton.class).setRendered(true);
+  }
+  
+  public void disableHomeButton() throws Exception
+  {
+    getChild(UIBookButton.class).setRendered(false);
+  }
+  
   private void initApplication() 
   {
     ComponentLocator.setContainer(ExoContainerContext.getCurrentContainer());
@@ -111,18 +128,27 @@ public class UIBookListManager extends UIContainer implements UIPopupComponent
   }
   
   
-  public void updateListBookComponent() throws Exception 
+  public void updateListBookComponent(Set<Book> books) throws Exception 
   {
     log.info("--- update Grid ---");
     
-    BookStorage bookStorage = (BookStorage) ComponentLocator.getContainer()
-        .getComponentInstanceOfType(BookStorage.class);
-    List<Book> allBooks = bookStorage.getAllBooks();
-    
     // update UI list of books
     UIGrid listBooksComponent = getChild(UIGrid.class) ; 
-    LazyPageList<Book> pageList = new LazyPageList<Book>(new ListAccessImpl<Book>(Book.class, allBooks), 10);
+    LazyPageList<Book> pageList = new LazyPageList<Book>(
+        new ListAccessImpl<Book>(Book.class, BookstoreUtil.convertToList(books)), 10);
     listBooksComponent.getUIPageIterator().setPageList(pageList) ;  
+  }
+  
+  public void disableEditBookComponent() throws Exception
+  {
+    log.info("--- disable edit book component ---");
+    getChild(UIBookEditForm.class).setRendered(false);
+  }
+  
+  public void enableEditBookComponent() throws Exception
+  {
+    log.info("--- enable edit book component ---");
+    getChild(UIBookEditForm.class).setRendered(true);
   }
   
   public long getCurrentPage() 
@@ -158,7 +184,8 @@ public class UIBookListManager extends UIContainer implements UIPopupComponent
       UIBookEditForm editBookComponent = listBookContainer.getChild(UIBookEditForm.class); 
       editBookComponent.updateUI(BookstoreUtil.getBookFromStorage(bookIsbn));
             
-      listBookContainer.updateListBookComponent();
+      listBookContainer.updateListBookComponent(BookstoreUtil.getAllBooksFromStorage());
+      listBookContainer.enableEditBookComponent();
       // update UI by JS
       event.getRequestContext().addUIComponentToUpdateByAjax(listBookContainer);
     }
@@ -175,7 +202,7 @@ public class UIBookListManager extends UIContainer implements UIPopupComponent
       
       BookstoreUtil.removeBookFromStorage(bookIsbn);
       
-      listBookContainer.updateListBookComponent();
+      listBookContainer.updateListBookComponent(BookstoreUtil.getAllBooksFromStorage());
       event.getRequestContext().addUIComponentToUpdateByAjax(listBookContainer);
     }
   }

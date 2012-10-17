@@ -1,7 +1,6 @@
 <%
   def allBooks = uicomponent.getAllBooks();
 %>
-<br/>
 <div class="<%=uiform.id %>">
   <% uiform.begin() %>
       <div class="FormContainer">

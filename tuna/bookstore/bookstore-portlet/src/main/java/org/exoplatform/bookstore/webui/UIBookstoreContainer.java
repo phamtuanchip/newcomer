@@ -31,7 +31,7 @@ import org.exoplatform.webui.config.annotation.ComponentConfig;
  */
 
 @ComponentConfig(
-  template = "app:/groovy/bookstore/webui/UIBookstore.gtmpl"
+  template = "app:/groovy/bookstore/webui/UIBookstoreContainer.gtmpl"
 )
 
 public class UIBookstoreContainer extends UIContainer {
