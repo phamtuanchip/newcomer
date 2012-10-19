@@ -58,9 +58,9 @@ public class UIBookSearchForm extends UIForm {
   
   private static final String FIELD_SEARCHVALUE = "value";
   
-  private static final String MESSAGE = "message";
+  private static final String MESSAGE           = "message";
   
-  private static final String SEARCH_OPTION = "searchOptions";
+  private static final String SEARCH_OPTION     = "searchOptions";
   
   public UIBookSearchForm() throws Exception
   {
@@ -138,10 +138,6 @@ public class UIBookSearchForm extends UIForm {
         if (searchChoice.equals("all")) 
         {
           books = BookstoreUtil.searchBookByAllProperties(wordsToSearch);
-          
-          //books = BookstoreUtil.searchBookBySpecification(
-          //    new BookTitleMatches(wordsToSearch).or(new BookIsbnMatches(wordsToSearch)), null);
-          //books.addAll(BookstoreUtil.searchBookByAuthorName(wordsToSearch, null));
         }
         
         log.info("number of books found: " + String.valueOf(books.size()));
@@ -160,9 +156,6 @@ public class UIBookSearchForm extends UIForm {
           searchBookComponent.showMessageBoxWith("No Book Found");
         else 
         searchBookComponent.showMessageBoxWith("No Book Found with " + searchChoice + " matches " + wordsToSearch);
-        //event.getRequestContext()
-        //     .getUIApplication()
-        //     .addMessage(new ApplicationMessage("UIBookSearchForm.msg.no-book-found", null));
       }
       catch (Exception e)
       {

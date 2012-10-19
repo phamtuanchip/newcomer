@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.exoplatform.bookstore.webui.popup.UIBookAddManager;
 import org.exoplatform.portal.webui.container.UIContainer;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 
@@ -49,6 +50,7 @@ public class UIBookstoreContainer extends UIContainer {
   @SuppressWarnings({ "rawtypes", "unchecked" })
   private List getSections() {
     List sections = new ArrayList();
+    sections.add(UIBookActionBar.class);
     sections.add(UIBookSearchForm.class);
     sections.add(UIBookListManager.class);
     return sections;

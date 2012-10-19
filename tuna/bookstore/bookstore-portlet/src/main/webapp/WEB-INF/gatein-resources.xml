@@ -14,4 +14,11 @@
     <css-priority>1</css-priority>
   </portlet-skin>                  
 
+  <javascript>
+    <param>
+      <js-module>eXo.bookstore.UIBookstorePortlet</js-module>
+      <js-path>/javascript/eXo/bookstore/UIBookstorePortlet.js</js-path>
+    </param>
+  </javascript>
+
 </gatein-resources>

@@ -20,22 +20,22 @@ package org.exoplatform.bookstore.exception;
  * Created by The eXo Platform SAS
  * Author : Anh-Tu Nguyen
  *          tuna@exoplatform.com
- * Oct 15, 2012  
+ * Oct 19, 2012  
  */
-public class NoBookFoundException extends Exception 
+public class NoAuthorFoundException extends Exception
 {
   /**
    * 
    */
   private static final long serialVersionUID = 1L;
-
-  public NoBookFoundException(String message)
-  {
-    super(message);
-  }
   
-  public NoBookFoundException()
+  public NoAuthorFoundException()
   {
     super();
+  }
+  
+  public NoAuthorFoundException(String message)
+  {
+    super(message);
   }
 }

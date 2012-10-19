@@ -52,6 +52,42 @@
   padding-bottom: 2px;
 }
 
+.UIBookstorePortlet .UIBookAddForm .message {
+  width       : 250px;
+  background  : #FFB800;
+  border      : 1px solid #c3c3c3;
+  padding     : 0;
+  vertical-align: top;
+  height      : 22px;
+  margin-left : 60px;
+  font-style  : italic;
+  font-size   : 11px;
+  color       : white;
+  border-radius: 5px;
+  padding-bottom: 10px;
+  padding-left: 5px;
+  padding-top : 5px;
+  padding-right: 5px;
+}
+
+.UIBookstorePortlet .UIAuthorAddForm .message {
+  width       : 220px;
+  background  : #FFB800;
+  border      : 1px solid #c3c3c3;
+  padding     : 0;
+  vertical-align: top;
+  height      : 22px;
+  margin-left : 80px;
+  font-style  : italic;
+  font-size   : 11px;
+  color       : white;
+  border-radius: 5px;
+  padding-bottom: 10px;
+  padding-left: 5px;
+  padding-top : 5px;
+  padding-right: 5px;
+}
+
 .UIBookstorePortlet .UIBookSearchForm .SearchIcon {
   /*background: url('../skinIcons/icons/CalendarIcons.gif') no-repeat right -1117px;*/
   height: 22px;

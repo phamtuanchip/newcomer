@@ -19,9 +19,7 @@ package org.exoplatform.bookstore.storage.impl;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.Session;
-import javax.jcr.Workspace;
 import javax.jcr.query.Query;
-import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
 import org.exoplatform.bookstore.domain.Author;
@@ -29,12 +27,12 @@ import org.exoplatform.bookstore.domain.Book;
 import org.exoplatform.bookstore.domain.NoAuthor;
 import org.exoplatform.bookstore.exception.DuplicateAuthorException;
 import org.exoplatform.bookstore.exception.DuplicateBookException;
+import org.exoplatform.bookstore.exception.NoAuthorFoundException;
 import org.exoplatform.bookstore.exception.NoBookFoundException;
 import org.exoplatform.bookstore.service.ComponentLocator;
 import org.exoplatform.bookstore.specification.AuthorIdMatches;
 import org.exoplatform.bookstore.specification.BookSpecification;
 import org.exoplatform.bookstore.storage.BookStorage;
-import org.exoplatform.container.ExoContainer;
 import org.exoplatform.services.jcr.impl.core.query.QueryImpl;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -157,6 +155,19 @@ public class BookStorageImpl implements BookStorage
                     newAuthor );
   }
   
+  private Author restoreAuthorFromNode(Node authorNode) throws Exception
+  {
+    log.info("--- restore author from node ---");
+    
+    Author author = new Author();
+    if (authorNode.getProperty("jcr:uuid").getString().equals(NoAuthor.id))
+      return new NoAuthor(); 
+    author.setId(authorNode.getProperty("jcr:uuid").getString());
+    author.setName(authorNode.getProperty("exo:authorname").getString());
+    
+    return author;
+  }
+  
   
   public boolean hasBook(String isbn) throws Exception  
   {
@@ -276,6 +287,25 @@ public class BookStorageImpl implements BookStorage
     return allBooks;
   }
 
+  public Set<Author> getAllAuthors() throws Exception
+  {
+    log.info("--- get all authors ---");
+    
+    Node booksNode = rootNode.getNode("exo:bookstore/exo:authors") ;
+    NodeIterator iterator = booksNode.getNodes();
+    
+    log.info(" result size: " + booksNode.getNodes().getSize());
+    
+    Set<Author> allAuthors = new HashSet<Author>();
+    if (iterator.hasNext() == false) 
+      throw new NoAuthorFoundException("No author found");
+      
+    while (iterator.hasNext()) 
+      allAuthors.add(restoreAuthorFromNode(iterator.nextNode()));
+    
+    return allAuthors;
+  }
+  
   public List<Book> getBooksFromAuthor(Author anAuthor) throws Exception
   {
     log.info("--- get books from author ---");

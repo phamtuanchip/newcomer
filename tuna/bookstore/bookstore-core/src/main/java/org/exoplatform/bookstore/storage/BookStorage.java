@@ -51,6 +51,8 @@ public interface BookStorage {
   
   public Set<Book> getAllBooks() throws Exception;
   
+  public Set<Author> getAllAuthors() throws Exception;
+  
   public List<Book> getBooksFromAuthor(Author anAuthor) throws Exception;
   
   public void removeAllBooks() throws Exception;

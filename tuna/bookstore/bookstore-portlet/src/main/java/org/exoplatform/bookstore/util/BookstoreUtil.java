@@ -28,7 +28,6 @@ import org.exoplatform.bookstore.specification.BookIsbnMatches;
 import org.exoplatform.bookstore.specification.BookSpecification;
 import org.exoplatform.bookstore.specification.BookTitleMatches;
 import org.exoplatform.bookstore.storage.BookStorage;
-import org.gatein.common.i18n.BundleName.Iterator;
 
 /**
  * Created by The eXo Platform SAS
@@ -64,9 +63,19 @@ public class BookstoreUtil {
     getBookStorage().insertBook(bookToInsert);
   }
 
+  public static void addAuthorToStorage(Author author) throws Exception
+  {
+    getBookStorage().addAuthor(author);
+  }
+  
   public static Set<Book> getAllBooksFromStorage() throws Exception
   {
     return getBookStorage().getAllBooks();
+  }
+  
+  public static Set<Author> getAllAuthorFromStorage() throws Exception
+  {
+    return getBookStorage().getAllAuthors();
   }
   
   public static List<Book> searchBookWithTitleLike(String wordToSearch) throws Exception
