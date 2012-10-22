@@ -127,4 +127,9 @@ public class BookstoreUtil {
     books.addAll(BookstoreUtil.searchBookByAuthorName(wordToSearch, null));
     return books;
   }
+  
+  public static void updateBookToStorage(Book bookToUpdate) throws Exception
+  {
+    getBookStorage().updateBook(bookToUpdate);
+  }
 }

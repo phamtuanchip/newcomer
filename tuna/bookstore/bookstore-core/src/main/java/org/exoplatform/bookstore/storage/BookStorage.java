@@ -36,6 +36,8 @@ import org.exoplatform.bookstore.specification.BookSpecification;
 public interface BookStorage {
   
   public BookStorage insertBook(Book bookToInsert) throws DuplicateBookException, Exception;
+  
+  public BookStorage updateBook(Book bookToUpdate) throws Exception;
     
   public BookStorage addAuthor(Author authorToAdd) throws DuplicateAuthorException, Exception;
   

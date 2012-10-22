@@ -73,7 +73,7 @@ public class BookStorageImpl implements BookStorage
     
     log.info("Book: " + bookToInsert.getIsbn() 
              + " -- " + bookToInsert.getTitle());
-    
+    Author author = getAuthorByName(bookToInsert.getAuthor().getName());
     if (hasBook(bookToInsert.getIsbn())) throw 
       new DuplicateBookException("Duplicate book " + bookToInsert.getIsbn());
     
@@ -82,7 +82,7 @@ public class BookStorageImpl implements BookStorage
     Node bookNode  = booksNode.addNode("exo:book");
     bookNode.setProperty("exo:isbn"  , bookToInsert.getIsbn());
     bookNode.setProperty("exo:title" , bookToInsert.getTitle());  
-    bookNode.setProperty("exo:author", bookToInsert.getAuthor().getId() );
+    bookNode.setProperty("exo:author", author.getId() );
     
     session.save();  
     log.info("--- insert Book: OK ---");
@@ -109,6 +109,7 @@ public class BookStorageImpl implements BookStorage
     log.info("Author id " + authorNode.getUUID().toString());
     
     session.save();
+    log.info("--- add Author: OK ----");
     return this;
   }
   
@@ -135,6 +136,32 @@ public class BookStorageImpl implements BookStorage
     
     log.info("--- get book by isbn: NO result ---");
     return null;
+  }
+  
+  public BookStorage updateBook(Book bookToUpdate) throws Exception
+  {
+    log.info("--- update book ---");
+   
+    Author bookAuthor = getAuthorByName(bookToUpdate.getAuthor().getName());
+    
+    String searchBookIsbnSQLQuery =
+        "SELECT * FROM nt:base WHERE exo:isbn = '" + bookToUpdate.getIsbn() + "'";
+   
+    Query query = ComponentLocator.getQueryManager()
+        .createQuery( searchBookIsbnSQLQuery, Query.SQL) ;
+   
+    QueryResult result = query.execute();    
+    NodeIterator iterator = result.getNodes();
+    
+    if (!iterator.hasNext()) throw
+        new NoBookFoundException("No book found with isbn " + bookToUpdate.getIsbn());
+    
+    Node bookNode = (Node) iterator.next(); 
+    bookNode.setProperty("exo:title", bookToUpdate.getTitle());
+    bookNode.setProperty("exo:author", bookAuthor.getId());
+    session.save();
+    log.info("--- update book: OK ---");
+    return this;
   }
   
   private Book restoreBookFromNode(Node bookNode) throws Exception
@@ -233,10 +260,12 @@ public class BookStorageImpl implements BookStorage
       if (node.getProperty("exo:authorname").getString().equals("No Author"))
         return new NoAuthor();
       
+      log.info("--- get author by name: OK ---");
       return new Author(node.getProperty("exo:authorname").getString(),
                         node.getUUID().toString());
     }
     
+    log.info("--- get author by name: OK ---");
     return new NoAuthor();  
   }
   

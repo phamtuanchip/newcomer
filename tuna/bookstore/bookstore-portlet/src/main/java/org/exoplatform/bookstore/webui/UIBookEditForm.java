@@ -19,6 +19,7 @@ package org.exoplatform.bookstore.webui;
 import org.exoplatform.bookstore.domain.Author;
 import org.exoplatform.bookstore.domain.Book;
 import org.exoplatform.bookstore.exception.DuplicateBookException;
+import org.exoplatform.bookstore.exception.NoBookFoundException;
 import org.exoplatform.bookstore.service.ComponentLocator;
 import org.exoplatform.bookstore.storage.BookStorage;
 import org.exoplatform.bookstore.util.BookstoreUtil;
@@ -59,8 +60,9 @@ public class UIBookEditForm extends UIForm
       
   public UIBookEditForm() throws Exception 
   {
-    addUIFormInput(new UIFormStringInput(EDIT_BOOK_ISBN, EDIT_BOOK_ISBN, null)
-        .addValidator(SpecialCharacterValidator.class));    
+    addUIFormInput(new UIFormStringInput(EDIT_BOOK_ISBN, EDIT_BOOK_ISBN, null));
+    getUIStringInput(EDIT_BOOK_ISBN).setReadOnly(true);
+        //.addValidator(SpecialCharacterValidator.class));    
     
     addUIFormInput(new UIFormStringInput(EDIT_BOOK_TITLE, EDIT_BOOK_TITLE, null)
         .addValidator(SpecialCharacterValidator.class));
@@ -116,14 +118,13 @@ public class UIBookEditForm extends UIForm
             
       try
       {   
-        Author anAuthor = BookstoreUtil.getAuthorFromStorage(editForm.getAuthorNameFromUI());
-        
-        BookstoreUtil.insertBookToStorage(new Book(
-                                                   editForm.getBookIsbnFromUI(),
-                                                   editForm.getBookTitleFromUI(),
-                                                   anAuthor));
+        //Author anAuthor = BookstoreUtil.getAuthorFromStorage(editForm.getAuthorNameFromUI());     
+        BookstoreUtil.updateBookToStorage(
+            new Book(editForm.getBookIsbnFromUI(),
+                     editForm.getBookTitleFromUI(),
+                     new Author(editForm.getAuthorNameFromUI())  ));
       }
-      catch (DuplicateBookException e)
+      catch (NoBookFoundException e)
       {
         // show popup if duplicate book found
         event.getRequestContext().getUIApplication().addMessage(

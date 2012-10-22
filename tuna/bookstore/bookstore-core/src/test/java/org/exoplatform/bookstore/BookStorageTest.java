@@ -16,7 +16,6 @@
  */
 package org.exoplatform.bookstore;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -34,7 +33,6 @@ import org.exoplatform.bookstore.service.ComponentLocator;
 import org.exoplatform.bookstore.specification.BookIsbnMatches;
 import org.exoplatform.bookstore.specification.BookTitleMatches;
 import org.exoplatform.bookstore.storage.BookStorage;
-import org.exoplatform.bookstore.storage.impl.BookStorageImpl;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.StandaloneContainer;
 import org.exoplatform.services.jcr.RepositoryService;
@@ -351,7 +349,7 @@ public class BookStorageTest extends TestCase
       List<Book> javaBooks = bookStorage.searchBookWithTitleLike("Java");
       assertEquals(new Integer(javaBooks.size()), new Integer(2));
       
-      List<Book> noBooks = bookStorage.searchBookWithTitleLike("noBooksWithNameLikeThis");
+      bookStorage.searchBookWithTitleLike("noBooksWithNameLikeThis");
     }
     catch (NoBookFoundException e)
     {
@@ -365,6 +363,7 @@ public class BookStorageTest extends TestCase
     log.info("--- test searching books with title like: OK ---\n");
   }
   
+  @SuppressWarnings({ "unchecked" })
   public void testSearchBookBySpecification() 
   {
     log.info("--- test searching book by specification ---");
@@ -415,5 +414,27 @@ public class BookStorageTest extends TestCase
     }
     
     log.info("--- test searching book by authorname: OK ---\n");
+  }
+  
+  public void testUpdateBook() throws Exception
+  {
+    log.info("--- test updating book ---");
+    
+    try 
+    {
+      bookStorage.insertBook(new Book("1009", "eXo JS", new Author("exo")));
+      bookStorage.addAuthor(new Author("eXo Platform"))
+                 .updateBook(new Book("1009", "eXo JS 2Ed", new Author("eXo Platform")));
+      Book eXoBook = bookStorage.getBookByIsbn("1009");
+
+      assertEquals(eXoBook.getTitle(), "eXo JS 2Ed");
+      assertEquals(eXoBook.getAuthor().getName(), "eXo Platform");
+    }
+    catch (Exception e)
+    {
+      log.error("update book exception " + e.getMessage());
+    }
+    
+    log.info("--- test updating book: OK ---\n");
   }
 }
