@@ -1,15 +1,7 @@
 <%
   def rcontext = _ctx.getRequestContext() ;
-  //rcontext.getJavascriptManager().addJavascript('eXo.bookstore.UIBookstorePortlet.sayHello("anhtu");') ;
+  rcontext.getJavascriptManager().addJavascript('eXo.bookstore.UIBookstorePortlet.sayHello();') ;
 %>
-<div class="UIBookstorePortlet">
-  
-  <!--
-  <button type="button" onclick="eXo.bookstore.UIBookstorePortlet.sayHello('anhtu')">Click Me!</button><br/>
-  
-  <input type="text" size="20" onkeyup="eXo.bookstore.UIBookstorePortlet.showResult('this.value')" /><br/>
-  <div id="livesearch"></div>
-  -->
-
+<div id="UIBookstorePortlet" class="UIBookstorePortlet">
   <% uicomponent.renderChildren(); %>
 </div>

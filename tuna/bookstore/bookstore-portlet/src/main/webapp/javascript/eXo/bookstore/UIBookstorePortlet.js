@@ -1,41 +1,27 @@
-/**
- * Test function - module eXo.bookstore.UIBookstorePortlet
- */
+// import common library
+eXo.require('eXo.core.JSON');
+eXo.require('eXo.core.DOMUtil');
+eXo.require('eXo.portal.PortalHttpRequest')
 
-// Define the object
-/*
-var eXo = {
-	bookstore : {
-		UIBookstorePortlet : {}
-	}
-} ;
-*/
+// define the namespace for eXo bookstore
+if (!eXo.bookstore) {
+	eXo.bookstore = {};
+}
 
-/*
-function sayHi(name) {
-	alert('hi' + name);
-} ;
-*/
+if (!eXo.bookstore.webservice) {
+	eXo.bookstore.webservice = {};
+}
 
-/**
- * Define constructor for object like Calendar 
- */
-
-/*
+// defining simple constructor for the object
 function UIBookstorePortlet() {
-  this.name = 'bookstore';
-} ; 
-
-UIBookstorePortlet.prototype.sayHello = function(name) {
-  alert('hello from ' + this.name + ' to '+ name);    
+  this.name = "UIBookstorePortlet";
 } ;
-*/
 
-/*
 UIBookstorePortlet.prototype.showResult = function(value) {
+
   if (value.length==0) { 
-    document.getElementById("livesearch").innerHTML="";
-    document.getElementById("livesearch").style.border="0px";
+    document.getElementById("ajaxResult").innerHTML="";
+    document.getElementById("ajaxResult").style.border="0px";
     return;
   }
 
@@ -50,16 +36,41 @@ UIBookstorePortlet.prototype.showResult = function(value) {
   
   xmlhttp.onreadystatechange=function() {
     if (xmlhttp.readyState==4 && xmlhttp.status==200) {
-      document.getElementById("livesearch").innerHTML=xmlhttp.responseText;
-      document.getElementById("livesearch").style.border="1px solid #A5ACB2";
+      alert("receive ajax response");
+      var response = eval ("(" + xmlhttp.responseText + ")");
+      var responseHTML = "<table>";
+      for (var i=0; i<response.length; i++) {
+        responseHTML = responseHTML + "<tr><td>" + response[i].name + "</td></tr>";
+      }
+      responseHTML = responseHTML + "</table>";
+
+      document.getElementById("ajaxResult").style.border="1px solid #A5ACB2";
+      document.getElementById("ajaxResult").innerHTML=responseHTML;
     }
   }
-
-  xmlhttp.open("GET", "livesearch.php?q=" + value, true);
+  
+  alert("making ajax request to bookstore with value " + value);
+  xmlhttp.open("GET", "/bookstore/rest/bookstore/searchAuthorByName/" + value, true);
   xmlhttp.send();
 } ;
-*/
 
-// create a simple instance for gtmpl to reference to
-// so the var eXo.bookstore.UIBookstorePortlet is one instance of UIBookstorePortlet
-//eXo.bookstore.UIBookstorePortlet = new UIBookstorePortlet();
+UIBookstorePortlet.prototype.sayHello = function() {
+  var DOMUtil = eXo.core.DOMUtil; 
+  
+  // insert element into UIBookstorePortlet
+  var portletElement = document.getElementById("UIBookstorePortlet");
+  var ajaxResult = document.createElement("div");
+  ajaxResult.innerHTML = "result ajax";
+  ajaxResult.id="ajaxResult";
+  portletElement.appendChild(ajaxResult);
+
+  var bookAuthorElement = document.getElementById("bookAuthor");
+
+  bookAuthorElement.onkeyup = function() {
+    alert("text: " + bookAuthorElement.value);
+    UIBookstorePortlet.prototype.showResult(bookAuthorElement.value);
+  };  
+} ;
+
+// instanciate the object
+eXo.bookstore.UIBookstorePortlet = new UIBookstorePortlet();
