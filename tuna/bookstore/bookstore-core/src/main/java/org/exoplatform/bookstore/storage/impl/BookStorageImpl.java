@@ -424,7 +424,8 @@ public class BookStorageImpl implements BookStorage
     return books; 
   }
   
-  public Set<Author> getAuthorWithNameLike(String authorName) throws Exception 
+  @SuppressWarnings("unchecked")
+  public Set<Author> getAuthorWithNameLike(String authorName, Integer resultLimit) throws Exception 
   {
     log.info("--- get author with name like ---");
     
@@ -433,8 +434,9 @@ public class BookStorageImpl implements BookStorage
     String searchAuthorSQLQuery =
         "SELECT * FROM nt:base WHERE exo:authorname LIKE '%" + authorName + "%'";
     
-    Query query = ComponentLocator.getQueryManager()
+    QueryImpl query = (QueryImpl) ComponentLocator.getQueryManager()
         .createQuery( searchAuthorSQLQuery, Query.SQL ) ;
+    if (resultLimit != null) query.setLimit(resultLimit);
     
     QueryResult result = query.execute();    
     NodeIterator iterator = result.getNodes();
@@ -461,7 +463,7 @@ public class BookStorageImpl implements BookStorage
     
     Set<Book> books = new HashSet<Book>();
     
-    Set<Author> authors = getAuthorWithNameLike(authorName);
+    Set<Author> authors = getAuthorWithNameLike(authorName, null);
     Iterator<Author> it = authors.iterator();
     while (it.hasNext())
     {

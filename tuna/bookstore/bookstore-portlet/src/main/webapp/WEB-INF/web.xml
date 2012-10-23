@@ -36,6 +36,19 @@
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 
+    <servlet>
+      <servlet-name>RestServer</servlet-name>
+      <description>eXo - Platform REST Server</description>
+      <servlet-class>org.exoplatform.services.rest.servlet.RestServlet</servlet-class>
+      <load-on-startup>4</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+      <servlet-name>RestServer</servlet-name>
+      <url-pattern>/rest/*</url-pattern>
+    </servlet-mapping>
+    
+    
     <!--  
 	<filter-mapping>
 		<filter-name>ResourceRequestFilter</filter-name>

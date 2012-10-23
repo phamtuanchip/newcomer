@@ -10,7 +10,6 @@
     <version>0.1-SNAPSHOT</version>   
   </parent>
   
-  <groupId>org.exoplatform.bookstore</groupId>
   <artifactId>bookstore-core</artifactId>
   <version>0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
@@ -74,7 +73,7 @@
       <version>${org.exoplatform.portal.version}</version>
       <scope>test</scope>
     </dependency>
-    
+
   </dependencies>
   
   
@@ -99,7 +98,7 @@
         <targetPath>./</targetPath>
         <filtering>false</filtering>
         <!-- this is the folder which are copied -->
-        <directory>${basedir}/src/test/resources</directory>
+        <directory>${basedir}/src/main/resources</directory>
         <includes>
           <include>**/*</include>
         </includes>

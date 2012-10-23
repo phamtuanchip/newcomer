@@ -71,7 +71,7 @@ public class BookStorageTest extends TestCase
       StandaloneContainer.addConfigurationURL(containerConfig);
       eContainer = StandaloneContainer.getInstance();
       ComponentLocator.setContainer(eContainer);
-      
+      eContainer.start();
       String loginConfig = BookStorageTest.class.getResource(
                              BookstoreConstant.LOGIN_CONFIGURATION).toString();   
                              System.setProperty("java.security.auth.login.config", loginConfig);

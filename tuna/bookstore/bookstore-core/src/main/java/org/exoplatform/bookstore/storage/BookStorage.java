@@ -63,7 +63,7 @@ public interface BookStorage {
   
   public Set<Book> searchBookBySpecification(BookSpecification spec, Integer resultLimit) throws Exception;
   
-  public Set<Author> getAuthorWithNameLike(String authorName) throws Exception;
+  public Set<Author> getAuthorWithNameLike(String authorName, Integer resultLimit) throws Exception;
   
   public Set<Book> searchBookByAuthorName(String authorName, Integer resultLimit) throws Exception;
 }

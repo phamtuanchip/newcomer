@@ -27,6 +27,7 @@
     <javax.servlet.version>2.5</javax.servlet.version>
     <javax.portlet.version>2.0</javax.portlet.version>
     <org.exoplatform.commons.version>1.1.4</org.exoplatform.commons.version>
+    <org.exoplatform.ws.version>2.2.9-GA-SNAPSHOT</org.exoplatform.ws.version>
   </properties>
   
 </project>
