@@ -106,26 +106,7 @@ public class BookstoreUtil {
   
   public static Set<Book> searchBookByAllProperties(String wordToSearch) throws Exception
   {
-    Set<Book> books = null;
-
-    try 
-    {
-      books = BookstoreUtil.searchBookBySpecification(
-        new BookTitleMatches(wordToSearch).or(new BookIsbnMatches(wordToSearch)), null);
-    }
-    catch (NoBookFoundException e)
-    {
-      // continue search
-      books = BookstoreUtil.searchBookByAuthorName(wordToSearch, null);
-      return books;
-    }
-    catch (Exception e)
-    {
-      return null;
-    }
-    
-    books.addAll(BookstoreUtil.searchBookByAuthorName(wordToSearch, null));
-    return books;
+    return getBookStorage().searchBookByAllProperties(wordToSearch);
   }
   
   public static void updateBookToStorage(Book bookToUpdate) throws Exception

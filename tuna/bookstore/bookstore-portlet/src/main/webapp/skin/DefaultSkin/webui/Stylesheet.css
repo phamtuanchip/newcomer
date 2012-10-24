@@ -98,5 +98,12 @@
 .UIBookstorePortlet .UIBookSearchForm p {
   width       : 100px;
   height      : 25px;
-  margin-right: 5px;
+  position :relative;
+  bottom: 10px;
+}
+
+.UIBookActionBar .UIAction {
+  width : 150px;
+  position: relative;
+  top: 40px;
 }

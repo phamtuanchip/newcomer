@@ -26,6 +26,6 @@ public class BookTitleMatches extends BookSpecification
 {  
   public BookTitleMatches(String bookTitle)
   {
-    super("exo:title LIKE '%" + bookTitle + "%' ");
+    super("UPPER(exo:title) LIKE '%" + bookTitle.toUpperCase() + "%' ");
   }
 }

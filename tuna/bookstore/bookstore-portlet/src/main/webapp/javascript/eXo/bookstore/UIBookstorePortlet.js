@@ -1,4 +1,6 @@
-// import common library
+/**
+ * import common library
+ */
 eXo.require('eXo.core.DOMUtil');
 
 /**
@@ -6,11 +8,11 @@ eXo.require('eXo.core.DOMUtil');
  */
 if (!eXo.bookstore) {
 	eXo.bookstore = {};
-}
+} ;
 
 if (!eXo.bookstore.webservice) {
 	eXo.bookstore.webservice = {};
-}
+} ;
 
 /**
  * constructor for UIBookstorePortlet object
@@ -18,12 +20,37 @@ if (!eXo.bookstore.webservice) {
 function UIBookstorePortlet() {
 } ;
 
+/**
+ * object that encapsulates Ajax request
+ */
+function BookstoreAjaxRequest() {
+  this.idSourceAjax = null;
+  this.url = null;
+  this.idResultElement = null;
+  return this;
+} ;
 
-UIBookstorePortlet.prototype.makeAjaxRequest = function(RESTurl, idComponentToShowResult, idSourceAjax, objectAttribute) {
+BookstoreAjaxRequest.prototype.fromElementId = function(idSourceAjax) {
+  this.idSourceAjax = idSourceAjax;
+  return this;
+} ;
+
+BookstoreAjaxRequest.prototype.toURL = function(url) {
+  this.url = url;
+  return this;
+} ;
+
+BookstoreAjaxRequest.prototype.updateResultOnElement = function(idResultElement) {
+  this.idResultElement = idResultElement;
+  return this;
+} ;
+
+
+UIBookstorePortlet.prototype.makeAjaxRequest = function(ajaxRequest, objectAttribute) {
   
   if (value.length==0) { 
-    document.getElementById(idComponentToShowResult).innerHTML="";
-    document.getElementById(idComponentToShowResult).style.border="0px";
+    document.getElementById(ajaxRequest.idResultElement).innerHTML="";
+    document.getElementById(ajaxRequest.idResultElement).style.border="0px";
     return;
   }
 
@@ -47,32 +74,31 @@ UIBookstorePortlet.prototype.makeAjaxRequest = function(RESTurl, idComponentToSh
           responseHTML = responseHTML + "<tr><td"
             + " onmouseover=\"this.style.backgroundColor='#EBEBDA'\""
             + " onmouseout=\"this.style.backgroundColor='white'\""
-            + " onclick=\"document.getElementById('" + idSourceAjax + "').value='"+ response[i].name + "';"
-            + " document.getElementById('" + idComponentToShowResult + "').style.visibility='hidden';\">"
+            + " onclick=\"document.getElementById('" + ajaxRequest.idSourceAjax + "').value='"+ response[i].name + "';"
+            + " document.getElementById('" + ajaxRequest.idResultElement + "').style.visibility='hidden';\">"
             + response[i].name + "</td></tr>";
         }
       responseHTML = responseHTML + "</table>";
       }
-      
       if (objectAttribute == "title") {
         for (var i=0; i<response.length; i++) {
           responseHTML = responseHTML + "<tr><td"
             + " onmouseover=\"this.style.backgroundColor='#EBEBDA'\""
             + " onmouseout=\"this.style.backgroundColor='white'\""
-            + " onclick=\"document.getElementById('" + idSourceAjax + "').value='"+ response[i].title + "';"
-            + " document.getElementById('" + idComponentToShowResult + "').style.visibility='hidden';\">"
+            + " onclick=\"document.getElementById('" + ajaxRequest.idSourceAjax + "').value='"+ response[i].title + "';"
+            + " document.getElementById('" + ajaxRequest.idResultElement + "').style.visibility='hidden';\">"
             + response[i].title + "</td></tr>";
         }
         responseHTML = responseHTML + "</table>";
       }
 
-      document.getElementById(idComponentToShowResult).style.border="1px solid #A5ACB2";
-      document.getElementById(idComponentToShowResult).style.visibility="visible";
-      document.getElementById(idComponentToShowResult).innerHTML=responseHTML;
+      document.getElementById(ajaxRequest.idResultElement).style.border="1px solid #A5ACB2";
+      document.getElementById(ajaxRequest.idResultElement).style.visibility="visible";
+      document.getElementById(ajaxRequest.idResultElement).innerHTML=responseHTML;
     }
-  }
+  } ;
   
-  xmlhttp.open("GET", RESTurl, true);
+  xmlhttp.open("GET", ajaxRequest.url, true);
   xmlhttp.send();
 } ;
 
@@ -86,8 +112,13 @@ UIBookstorePortlet.prototype.updateAuthor = function() {
   bookAuthorElement.parentNode.appendChild(ajaxResult_bookAuthor);
 
   bookAuthorElement.onkeyup = function() {
-    UIBookstorePortlet.prototype.makeAjaxRequest("/bookstore/rest/bookstore/searchAuthorByName/" + bookAuthorElement.value, 
-      "ajaxResult_bookAuthor", "bookAuthor", "name");
+    
+    var updateAuthorRequest = new BookstoreAjaxRequest();
+    updateAuthorRequest.fromElementId("bookAuthor")
+        .toURL("/bookstore/rest/bookstore/searchAuthorByName/" + bookAuthorElement.value)
+        .updateResultOnElement("ajaxResult_bookAuthor");
+
+    UIBookstorePortlet.prototype.makeAjaxRequest(updateAuthorRequest, "name");
   };  
 } ;
 
@@ -105,8 +136,12 @@ UIBookstorePortlet.prototype.updateBook = function() {
   searchElement.parentNode.appendChild(ajaxResult_bookTitle);
 
   searchElement.onkeyup = function() {
-    UIBookstorePortlet.prototype.makeAjaxRequest("/bookstore/rest/bookstore/searchBookByTitle/" + document.getElementById("value").value, 
-      "ajaxResult_bookTitle", "value", "title");
+    var updateBookRequest = new BookstoreAjaxRequest();
+    updateBookRequest.fromElementId("value")
+        .toURL("/bookstore/rest/bookstore/searchBookByTitle/" + document.getElementById("value").value)
+        .updateResultOnElement("ajaxResult_bookTitle");
+
+    UIBookstorePortlet.prototype.makeAjaxRequest(updateBookRequest, "title");
   };  
 } ;
 

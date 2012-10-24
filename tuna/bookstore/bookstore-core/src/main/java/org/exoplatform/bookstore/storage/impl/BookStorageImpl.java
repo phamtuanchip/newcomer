@@ -31,7 +31,9 @@ import org.exoplatform.bookstore.exception.NoAuthorFoundException;
 import org.exoplatform.bookstore.exception.NoBookFoundException;
 import org.exoplatform.bookstore.service.ComponentLocator;
 import org.exoplatform.bookstore.specification.AuthorIdMatches;
+import org.exoplatform.bookstore.specification.BookIsbnMatches;
 import org.exoplatform.bookstore.specification.BookSpecification;
+import org.exoplatform.bookstore.specification.BookTitleMatches;
 import org.exoplatform.bookstore.storage.BookStorage;
 import org.exoplatform.services.jcr.impl.core.query.QueryImpl;
 import org.exoplatform.services.log.ExoLogger;
@@ -224,7 +226,7 @@ public class BookStorageImpl implements BookStorage
     log.info("--- has book with author name ---");
 
     String searchBookIsbnSQLQuery =
-        "SELECT * FROM nt:base WHERE exo:authorname = '" + authorName + "'";
+        "SELECT * FROM nt:base WHERE UPPER(exo:authorname) = '" + authorName.toUpperCase() + "'";
     
     Query query = ComponentLocator.getQueryManager()
         .createQuery( searchBookIsbnSQLQuery, Query.SQL) ;
@@ -245,7 +247,7 @@ public class BookStorageImpl implements BookStorage
     log.info("Author name " + authorName);
     
     String searchAuthorSQLQuery =
-        "SELECT * FROM nt:base WHERE exo:authorname = '" + authorName + "'";
+        "SELECT * FROM nt:base WHERE UPPER(exo:authorname) = '" + authorName.toUpperCase() + "'";
     
     Query query = ComponentLocator.getQueryManager()
         .createQuery( searchAuthorSQLQuery, Query.SQL ) ;
@@ -372,7 +374,7 @@ public class BookStorageImpl implements BookStorage
     log.info("--- search book with title like ---");
     
     String selectBookSQLQuery =
-      "SELECT * FROM nt:base WHERE exo:title LIKE '%" + bookTitle + "%'";
+      "SELECT * FROM nt:base WHERE UPPER(exo:title) LIKE '%" + bookTitle.toUpperCase() + "%'";
     
     Query query = ComponentLocator.getQueryManager()
         .createQuery( selectBookSQLQuery, Query.SQL) ;
@@ -421,7 +423,7 @@ public class BookStorageImpl implements BookStorage
     log.info("Author name " + authorName);
     
     String searchAuthorSQLQuery =
-        "SELECT * FROM nt:base WHERE exo:authorname LIKE '%" + authorName + "%'";
+        "SELECT * FROM nt:base WHERE UPPER(exo:authorname) LIKE '%" + authorName.toUpperCase() + "%'";
     
     QueryImpl query = (QueryImpl) ComponentLocator.getQueryManager()
         .createQuery( searchAuthorSQLQuery, Query.SQL ) ;
@@ -461,5 +463,29 @@ public class BookStorageImpl implements BookStorage
     }  
     
     return books;  
+  }
+  
+  public Set<Book> searchBookByAllProperties(String wordToSearch) throws Exception
+  {
+    Set<Book> books = null;
+
+    try 
+    {
+      books = searchBookBySpecification(
+        new BookTitleMatches(wordToSearch).or(new BookIsbnMatches(wordToSearch)), null);
+    }
+    catch (NoBookFoundException e)
+    {
+      // continue search
+      books = searchBookByAuthorName(wordToSearch, null);
+      return books;
+    }
+    catch (Exception e)
+    {
+      return null;
+    }
+    
+    books.addAll(searchBookByAuthorName(wordToSearch, null));
+    return books;
   }
 }
