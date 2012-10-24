@@ -10,10 +10,8 @@
     <version>0.1-SNAPSHOT</version>   
   </parent>
   
-  <groupId>org.exoplatform.bookstore</groupId>
   <artifactId>bookstore-portlet</artifactId>
   <packaging>war</packaging>
-  <version>0.1-SNAPSHOT</version>
   
   <name>Bookstore-portlet</name>
   <url>http://maven.apache.org</url>

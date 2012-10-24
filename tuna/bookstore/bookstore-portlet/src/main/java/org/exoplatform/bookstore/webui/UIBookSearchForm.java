@@ -98,8 +98,8 @@ public class UIBookSearchForm extends UIForm {
   private void addSelectBox()
   {
     List<SelectItemOption<String>> searchOptions = new ArrayList<SelectItemOption<String>>();
-    searchOptions.add(new SelectItemOption<String>("author", "bookAuthor"));
     searchOptions.add(new SelectItemOption<String>("title" , "bookTitle"));
+    searchOptions.add(new SelectItemOption<String>("author", "bookAuthor"));
     searchOptions.add(new SelectItemOption<String>("isbn"  , "bookIsbn"));
     searchOptions.add(new SelectItemOption<String>("all"   , "all"));
     addChild(new UIFormSelectBox(SEARCH_OPTION, SEARCH_OPTION, searchOptions));

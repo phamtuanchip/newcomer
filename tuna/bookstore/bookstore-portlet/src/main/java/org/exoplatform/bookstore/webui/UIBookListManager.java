@@ -86,7 +86,6 @@ public class UIBookListManager extends UIContainer implements UIPopupComponent
     addComponentToListBooks();
     addComponentToEditBook();  
     addHomeButton();
-    initApplication();   
     updateListBookComponent(BookstoreUtil.getAllBooksFromStorage());
   }
   
@@ -118,15 +117,6 @@ public class UIBookListManager extends UIContainer implements UIPopupComponent
   {
     getChild(UIBookButton.class).setRendered(false);
   }
-  
-  private void initApplication() 
-  {
-    ComponentLocator.setContainer(ExoContainerContext.getCurrentContainer());
-    ComponentLocator.emptyDefaultNodes();
-    ComponentLocator.initDefaultNodes();
-    ComponentLocator.initBookstore();
-  }
-  
   
   public void updateListBookComponent(Set<Book> books) throws Exception 
   {

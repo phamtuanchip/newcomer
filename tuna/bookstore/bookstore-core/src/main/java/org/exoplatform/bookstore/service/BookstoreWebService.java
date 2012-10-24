@@ -30,7 +30,8 @@ import org.exoplatform.bookstore.domain.Author;
 import org.exoplatform.bookstore.domain.Book;
 import org.exoplatform.bookstore.specification.BookTitleMatches;
 import org.exoplatform.bookstore.storage.BookStorage;
-import org.exoplatform.container.PortalContainer;
+import org.exoplatform.container.ExoContainer;
+import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.resource.ResourceContainer;
@@ -62,11 +63,12 @@ public class BookstoreWebService implements ResourceContainer
     log.info("-- Bookstore WebService constructor ---\n");
     
     try {
-      PortalContainer pContainer = PortalContainer.getInstance();
-      log.info("container " + pContainer.getName());
-      ComponentLocator.setContainer(pContainer);
+      ExoContainer eContainer = ExoContainerContext.getCurrentContainer();
+      ComponentLocator.setContainer(eContainer);
+      ComponentLocator.emptyDefaultNodes();
+      ComponentLocator.initDefaultNodes();
       ComponentLocator.initBookstore();
-      bookStorage = (BookStorage) pContainer.getComponentInstanceOfType(BookStorage.class);
+      bookStorage = (BookStorage) eContainer.getComponentInstanceOfType(BookStorage.class);
     } catch (Exception e) {
       log.error("exception init container " + e.getMessage());
     }  

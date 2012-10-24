@@ -307,11 +307,8 @@ public class BookStorageImpl implements BookStorage
     log.info(" result size: " + booksNode.getNodes().getSize());
     
     Set<Book> allBooks = new HashSet<Book>();
-    if (iterator.hasNext() == false) 
-      throw new NoBookFoundException("No book found");
-      
-    while (iterator.hasNext()) 
-      allBooks.add(restoreBookFromNode(iterator.nextNode()));
+    if (!iterator.hasNext()) throw new NoBookFoundException("No book found");
+    while (iterator.hasNext()) allBooks.add(restoreBookFromNode(iterator.nextNode()));
     
     return allBooks;
   }
@@ -326,11 +323,8 @@ public class BookStorageImpl implements BookStorage
     log.info(" result size: " + booksNode.getNodes().getSize());
     
     Set<Author> allAuthors = new HashSet<Author>();
-    if (iterator.hasNext() == false) 
-      throw new NoAuthorFoundException("No author found");
-      
-    while (iterator.hasNext()) 
-      allAuthors.add(restoreAuthorFromNode(iterator.nextNode()));
+    if (!iterator.hasNext()) throw new NoAuthorFoundException("No author found");
+    while (iterator.hasNext()) allAuthors.add(restoreAuthorFromNode(iterator.nextNode()));
     
     return allAuthors;
   }
@@ -353,11 +347,9 @@ public class BookStorageImpl implements BookStorage
     log.info(" result size: " + result.getNodes().getSize());
     
     List<Book> books = new ArrayList<Book>();
-    if (iterator.hasNext() == false)       
-      throw new NoBookFoundException("No book found from author " + anAuthor);
+    if (!iterator.hasNext()) throw new NoBookFoundException("No book found from author " + anAuthor);
     
-    while (iterator.hasNext()) 
-      books.add(restoreBookFromNode(iterator.nextNode()));
+    while (iterator.hasNext()) books.add(restoreBookFromNode(iterator.nextNode()));
     
     return books;   
   }
@@ -391,8 +383,7 @@ public class BookStorageImpl implements BookStorage
     log.info(" result size: " + result.getNodes().getSize());
     
     List<Book> books = new ArrayList<Book>();
-    if (iterator.hasNext() == false) 
-      throw new NoBookFoundException("No book found with name like " + bookTitle); 
+    if (!iterator.hasNext()) throw new NoBookFoundException("No book found with name like " + bookTitle); 
     
     while (iterator.hasNext()) 
       books.add(restoreBookFromNode(iterator.nextNode()));
@@ -415,8 +406,7 @@ public class BookStorageImpl implements BookStorage
     log.info(" result size: " + result.getNodes().getSize());
     
     Set<Book> books = new HashSet<Book>();
-    if (iterator.hasNext() == false) 
-      throw new NoBookFoundException("No book found"); 
+    if (!iterator.hasNext()) throw new NoBookFoundException("No book found"); 
     
     while (iterator.hasNext()) 
       books.add(restoreBookFromNode(iterator.nextNode()));
@@ -424,7 +414,6 @@ public class BookStorageImpl implements BookStorage
     return books; 
   }
   
-  @SuppressWarnings("unchecked")
   public Set<Author> getAuthorWithNameLike(String authorName, Integer resultLimit) throws Exception 
   {
     log.info("--- get author with name like ---");
