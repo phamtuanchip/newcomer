@@ -107,3 +107,9 @@
   position: relative;
   top: 40px;
 }
+
+.UIBookActionBar .UIAction .LightBlueStyle {
+  padding-left: 30px;
+  background: url('/bookstore/skin/DefaultSkin/webui/skinIcons/icons/CalendarIcons.gif') no-repeat left -21px;
+  line-height: 25px;
+}

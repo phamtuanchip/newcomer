@@ -16,9 +16,12 @@
  */
 package org.exoplatform.bookstore.portlet;
 
+import org.exoplatform.bookstore.service.ComponentLocator;
 import org.exoplatform.bookstore.webui.UIBookstoreContainer;
 import org.exoplatform.bookstore.webui.action.UIPopupAction;
 import org.exoplatform.bookstore.webui.popup.UIBookAddManager;
+import org.exoplatform.container.ExoContainer;
+import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
@@ -45,8 +48,18 @@ public class UIBookstorePortlet extends UIPortletApplication
   {
     log.info("--- UIBookstorePortlet constructor ---");
     
+    initApplication();
     addMainContainer();
     addPopupManager();
+  }
+  
+  private void initApplication() throws Exception
+  {
+    ExoContainer eContainer = ExoContainerContext.getCurrentContainer();
+    ComponentLocator.setContainer(eContainer);
+    ComponentLocator.emptyDefaultNodes();
+    ComponentLocator.initDefaultNodes();
+    ComponentLocator.initBookstore();
   }
   
   private void addMainContainer() throws Exception

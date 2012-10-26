@@ -130,18 +130,55 @@ UIBookstorePortlet.prototype.updateBook = function() {
   var portletElement = document.getElementById("UIBookstorePortlet");
   var searchElement = DOMUtil.findFirstDescendantByClass(portletElement, "div", "Input Search");
   if (!searchElement) alert("searchElement null");
-  var ajaxResult_bookTitle = document.createElement("div");
-  ajaxResult_bookTitle.id="ajaxResult_bookTitle";
-  ajaxResult_bookTitle.style.visibility="hidden";
-  searchElement.parentNode.appendChild(ajaxResult_bookTitle);
+
+  var ajaxResult_bookUpdate = document.createElement("div");
+  ajaxResult_bookUpdate.id="ajaxResult_bookUpdate";
+  ajaxResult_bookUpdate.style.visibility="hidden";
+  searchElement.parentNode.appendChild(ajaxResult_bookUpdate);
 
   searchElement.onkeyup = function() {
-    var updateBookRequest = new BookstoreAjaxRequest();
-    updateBookRequest.fromElementId("value")
-        .toURL("/bookstore/rest/bookstore/searchBookByTitle/" + document.getElementById("value").value)
-        .updateResultOnElement("ajaxResult_bookTitle");
+    var searchOptions = document.getElementById("searchOptions");
+    var selectedValue = searchOptions.options[searchOptions.selectedIndex].value;
 
-    UIBookstorePortlet.prototype.makeAjaxRequest(updateBookRequest, "title");
+    if (selectedValue == "bookTitle") {
+
+      var updateBookRequest = new BookstoreAjaxRequest();
+      updateBookRequest.fromElementId("value")
+        .toURL("/bookstore/rest/bookstore/searchBookByTitle/" + document.getElementById("value").value)
+        .updateResultOnElement("ajaxResult_bookUpdate");
+
+      UIBookstorePortlet.prototype.makeAjaxRequest(updateBookRequest, "title");
+    }
+
+    if (selectedValue == "bookIsbn") {
+
+      var updateBookRequest = new BookstoreAjaxRequest();
+      updateBookRequest.fromElementId("value")
+        .toURL("/bookstore/rest/bookstore/searchBookByIsbn/" + document.getElementById("value").value)
+        .updateResultOnElement("ajaxResult_bookUpdate");
+
+      UIBookstorePortlet.prototype.makeAjaxRequest(updateBookRequest, "title");
+    }
+
+    if (selectedValue == "bookAuthor") {
+
+      var updateBookRequest = new BookstoreAjaxRequest();
+      updateBookRequest.fromElementId("value")
+        .toURL("/bookstore/rest/bookstore/searchBookByAuthorName/" + document.getElementById("value").value)
+        .updateResultOnElement("ajaxResult_bookUpdate");
+
+      UIBookstorePortlet.prototype.makeAjaxRequest(updateBookRequest, "title");
+    }
+
+    if (selectedValue == "all") {
+
+      var updateBookRequest = new BookstoreAjaxRequest();
+      updateBookRequest.fromElementId("value")
+        .toURL("/bookstore/rest/bookstore/searchBookByAllProperties/" + document.getElementById("value").value)
+        .updateResultOnElement("ajaxResult_bookUpdate");
+
+      UIBookstorePortlet.prototype.makeAjaxRequest(updateBookRequest, "title");
+    }
   };  
 } ;
 
