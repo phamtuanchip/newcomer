@@ -20,6 +20,9 @@
 	  <type>org.exoplatform.services.rest.impl.RequestHandlerImpl</type>
 	</component>
 	
+	<component>
+      <type>org.exoplatform.services.rest.impl.ResourceBinder</type>
+   </component>
 	
 	<!-- Start - Login Configuration Initialization -->
 	<component>

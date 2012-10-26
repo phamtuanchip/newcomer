@@ -113,3 +113,7 @@
   background: url('/bookstore/skin/DefaultSkin/webui/skinIcons/icons/CalendarIcons.gif') no-repeat left -21px;
   line-height: 25px;
 }
+
+.UIBookAddManager .authorsOptions {
+  margin-left: 55px;
+}

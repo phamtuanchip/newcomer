@@ -32,11 +32,14 @@ import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.ContainerResponseWriter;
 import org.exoplatform.services.rest.RequestHandler;
+import org.exoplatform.services.rest.impl.ApplicationContextImpl;
 import org.exoplatform.services.rest.impl.ContainerRequest;
 import org.exoplatform.services.rest.impl.ContainerResponse;
 import org.exoplatform.services.rest.impl.EnvironmentContext;
 import org.exoplatform.services.rest.impl.InputHeadersMap;
 import org.exoplatform.services.rest.impl.MultivaluedMapImpl;
+import org.exoplatform.services.rest.impl.ProviderBinder;
+import org.exoplatform.services.rest.impl.ResourceBinder;
 import org.exoplatform.services.rest.tools.ByteArrayContainerResponseWriter;
 
 import junit.framework.TestCase;
@@ -64,6 +67,8 @@ public class BookstoreWebServiceTest extends TestCase
   private static RequestHandler requestHandler;
   
   private static String baseURI = "";
+
+  private static ResourceBinder binder;
   
   static {
     initContainer();
@@ -93,6 +98,7 @@ public class BookstoreWebServiceTest extends TestCase
     log.info("--- init container: OK ---\n");
   }
   
+  @SuppressWarnings("deprecation")
   private static void initMainComponent()
   {
     log.info("--- init main component ---");
@@ -104,6 +110,15 @@ public class BookstoreWebServiceTest extends TestCase
     bookStorage = (BookStorage) eContainer.getComponentInstanceOfType(BookStorage.class);
     webService = (BookstoreWebService) eContainer.getComponentInstance(BookstoreWebService.class);  
     requestHandler = (RequestHandler) eContainer.getComponentInstanceOfType(RequestHandler.class);
+    binder = (ResourceBinder) eContainer.getComponentInstanceOfType(ResourceBinder.class);
+    
+    ProviderBinder.setInstance(new ProviderBinder());
+    ProviderBinder providers = ProviderBinder.getInstance();
+    ApplicationContextImpl.setCurrent(new ApplicationContextImpl(null, null, providers));
+    binder.clear();
+    
+    binder.bind(webService);
+    
     if (requestHandler != null) log.info("get request handler OK");
     log.info("--- init main component: OK ---\n");
   }

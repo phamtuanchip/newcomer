@@ -61,7 +61,7 @@ public class BookstoreWebService implements ResourceContainer
 
   public BookstoreWebService() 
   {
-    log.info("-- BookstoreWebService constructor ---\n");
+    log.info("-- BookstoreWebService constructor ---");
     
     bookStorage = (BookStorage) ExoContainerContext.getCurrentContainer()
         .getComponentInstanceOfType(BookStorage.class);
