@@ -20,7 +20,6 @@
 	  <type>org.exoplatform.services.rest.impl.RequestHandlerImpl</type>
 	</component>
 	
-	
 	<!-- Start - Login Configuration Initialization -->
 	<component>
 		<key>org.exoplatform.services.log.LogConfigurationInitializer</key>

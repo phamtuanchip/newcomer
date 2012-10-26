@@ -31,7 +31,6 @@ import org.exoplatform.bookstore.domain.Book;
 import org.exoplatform.bookstore.specification.BookIsbnMatches;
 import org.exoplatform.bookstore.specification.BookTitleMatches;
 import org.exoplatform.bookstore.storage.BookStorage;
-import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -39,9 +38,10 @@ import org.exoplatform.services.rest.resource.ResourceContainer;
 
 /**
  * Created by The eXo Platform SAS
- * Author : Anh-Tu Nguyen
- *          tuna@exoplatform.com
- * Oct 23, 2012  
+ * 
+ * @author Anh-Tu Nguyen<br>
+ *         tuna@exoplatform.com<br>
+ *         Oct 23, 2012  
  */
 @Path("/bookstore")
 public class BookstoreWebService implements ResourceContainer
@@ -61,18 +61,10 @@ public class BookstoreWebService implements ResourceContainer
 
   public BookstoreWebService() 
   {
-    log.info("-- Bookstore WebService constructor ---\n");
+    log.info("-- BookstoreWebService constructor ---\n");
     
-    try {
-      ExoContainer eContainer = ExoContainerContext.getCurrentContainer();
-      ComponentLocator.setContainer(eContainer);
-      ComponentLocator.emptyDefaultNodes();
-      ComponentLocator.initDefaultNodes();
-      ComponentLocator.initBookstore();
-      bookStorage = (BookStorage) eContainer.getComponentInstanceOfType(BookStorage.class);
-    } catch (Exception e) {
-      log.error("exception init container " + e.getMessage());
-    }  
+    bookStorage = (BookStorage) ExoContainerContext.getCurrentContainer()
+        .getComponentInstanceOfType(BookStorage.class);
   }
   
   /**

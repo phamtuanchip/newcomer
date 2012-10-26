@@ -96,13 +96,8 @@ public class ComponentLocator {
       
       try {
         Repository repo = repoSer.getRepository("repository");
-        String[] workspaces = repoSer.getRepository("repository").getWorkspaceNames();
-        int size = workspaces.length;
-        for (int i=0; i<size; i++)
-        {
-          log.info("workspace " + workspaces[i]);
-        }
-         session = repo.login(new SimpleCredentials(
+        
+        session = repo.login(new SimpleCredentials(
                                      username, 
                                      password.toCharArray()),
                                  BookstoreConstant.BOOKSTORE_TEST_WORKSPACE
@@ -122,13 +117,8 @@ public class ComponentLocator {
     
       try {
         Repository repo = repoSer.getRepository("repository");
-        String[] workspaces = repoSer.getRepository("repository").getWorkspaceNames();
-        int size = workspaces.length;
-        for (int i=0; i<size; i++)
-        {
-          log.info("workspace " + workspaces[i]);
-        }
-         session = repo.login(new SimpleCredentials(
+       
+        session = repo.login(new SimpleCredentials(
                                      username, 
                                      password.toCharArray()),
                                  BookstoreConstant.BOOKSTORE_WORKSPACE
@@ -229,7 +219,8 @@ public class ComponentLocator {
     } 
     catch (PathNotFoundException e) 
     {
-      log.error("node exo:bookstore does not exist " + e.getMessage());
+      // this is not an issue 
+      log.info("node exo:bookstore does not exist " + e.getMessage());
     }
     catch (RepositoryException e)
     {

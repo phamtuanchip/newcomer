@@ -38,5 +38,7 @@ public class BookstoreConstant {
   
   public static final String CONTAINER_CONFIGURATION   = "/conf/portal/configuration.xml";
   
+  public static final String REST_CONTAINER_CONFIGURATION = "/conf/portal/test-rest-configuration.xml";
+  
   public static final String LOGIN_CONFIGURATION       = "/conf/portal/login.config"; 
 }

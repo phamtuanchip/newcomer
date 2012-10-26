@@ -18,10 +18,13 @@ package org.exoplatform.bookstore.storage.impl;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
+import javax.jcr.Repository;
 import javax.jcr.Session;
+import javax.jcr.SimpleCredentials;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryResult;
 
+import org.exoplatform.bookstore.common.BookstoreConstant;
 import org.exoplatform.bookstore.domain.Author;
 import org.exoplatform.bookstore.domain.Book;
 import org.exoplatform.bookstore.domain.NoAuthor;
@@ -35,6 +38,11 @@ import org.exoplatform.bookstore.specification.BookIsbnMatches;
 import org.exoplatform.bookstore.specification.BookSpecification;
 import org.exoplatform.bookstore.specification.BookTitleMatches;
 import org.exoplatform.bookstore.storage.BookStorage;
+import org.exoplatform.container.ExoContainer;
+import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.container.PortalContainer;
+import org.exoplatform.container.StandaloneContainer;
+import org.exoplatform.services.jcr.RepositoryService;
 import org.exoplatform.services.jcr.impl.core.query.QueryImpl;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -60,15 +68,75 @@ public class BookStorageImpl implements BookStorage
   
   private Node rootNode;
     
-  public BookStorageImpl()
+  public BookStorageImpl() throws Exception
   {
     log.info("--- init BookStorageImpl ---");
     
-    session  = ComponentLocator.getSession();
-    rootNode = ComponentLocator.getRootNode();  
+    RepositoryService repoSer = (RepositoryService) ExoContainerContext
+        .getCurrentContainer().getComponentInstance(RepositoryService.class);
+    
+    session  = getSession( ExoContainerContext.getCurrentContainer(), repoSer );
+    rootNode = session.getRootNode();  
   }
   
   
+  private Session getSession(ExoContainer eContainer, RepositoryService repoSer )
+  {
+    Session session = null;
+    String username = null;
+    String password = null;
+    
+    if (eContainer instanceof StandaloneContainer) 
+    {
+      log.info("Standalone Container used");
+      
+      username = BookstoreConstant.USERNAME_TEST_REPOSITORY;
+      password = BookstoreConstant.PASSWORD_TEST_REPOSITORY;
+      
+      String loginConfig = BookStorageImpl.class.getResource(BookstoreConstant.LOGIN_CONFIGURATION).toString();   
+      System.setProperty("java.security.auth.login.config", loginConfig);
+      
+      try 
+      {
+        Repository repo = repoSer.getRepository("repository");
+        
+        session = repo.login(new SimpleCredentials(
+                                     username, 
+                                     password.toCharArray()),
+                                 BookstoreConstant.BOOKSTORE_TEST_WORKSPACE
+                                 );
+      } 
+      catch (Exception e) 
+      {
+        log.error("--- get Session exception ---" + e.getMessage());
+      }
+    }
+    
+    else if (eContainer instanceof PortalContainer)
+    {
+      log.info("Portal Container used");
+
+      username = BookstoreConstant.USERNAME_REPOSITORY;
+      password = BookstoreConstant.PASSWORD_REPOSITORY;
+    
+      try {
+        Repository repo = repoSer.getRepository("repository");
+       
+        session = repo.login(new SimpleCredentials(
+                                     username, 
+                                     password.toCharArray()),
+                                 BookstoreConstant.BOOKSTORE_WORKSPACE
+                                 );
+      } 
+      catch (Exception e) 
+      {
+        log.error("--- get Session exception ---" + e.getMessage());
+      }
+    }
+    
+    return session;
+  }
+    
   public BookStorage insertBook(Book bookToInsert) throws DuplicateBookException, Exception
   {
     log.info("--- insert Book ---");

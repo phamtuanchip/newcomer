@@ -21,9 +21,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import javax.jcr.Session;
-import javax.jcr.SimpleCredentials;
-
 import org.exoplatform.bookstore.common.BookstoreConstant;
 import org.exoplatform.bookstore.domain.Author;
 import org.exoplatform.bookstore.domain.Book;
@@ -35,7 +32,6 @@ import org.exoplatform.bookstore.specification.BookTitleMatches;
 import org.exoplatform.bookstore.storage.BookStorage;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.StandaloneContainer;
-import org.exoplatform.services.jcr.RepositoryService;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 
@@ -59,6 +55,7 @@ public class BookStorageTest extends TestCase
   static 
   {
     initContainer();
+    initTestData();
   }
   
   private static void initContainer() 
@@ -71,10 +68,8 @@ public class BookStorageTest extends TestCase
       StandaloneContainer.addConfigurationURL(containerConfig);
       eContainer = StandaloneContainer.getInstance();
       ComponentLocator.setContainer(eContainer);
-      eContainer.start();
-      String loginConfig = BookStorageTest.class.getResource(
-                             BookstoreConstant.LOGIN_CONFIGURATION).toString();   
-                             System.setProperty("java.security.auth.login.config", loginConfig);
+      String loginConfig = BookStorageTest.class.getResource(BookstoreConstant.LOGIN_CONFIGURATION).toString();   
+      System.setProperty("java.security.auth.login.config", loginConfig);
     }
     catch (Exception e)
     {
@@ -82,54 +77,25 @@ public class BookStorageTest extends TestCase
     }
   }
   
-  
-  public void testLoginToWorkSpace() throws Exception
-  {
-    log.info("--- test Login ---");
+  private static void initTestData()
+  {    
+    ComponentLocator.emptyDefaultNodes();
+    ComponentLocator.initDefaultNodes();
     
-    RepositoryService repoSer = (RepositoryService) 
-        eContainer.getComponentInstance(RepositoryService.class);
-    Session session = repoSer.getRepository("repository").login
-    (
-     new SimpleCredentials( BookstoreConstant.USERNAME_TEST_REPOSITORY, 
-                            BookstoreConstant.PASSWORD_TEST_REPOSITORY.toCharArray() ),
-     BookstoreConstant.BOOKSTORE_TEST_WORKSPACE
-    );
-    
-    log.info("user id   " + session.getUserID());
-    log.info("workspace " + session.getWorkspace().getName());
-    
-    assertEquals(session.getUserID(), BookstoreConstant.USERNAME_TEST_REPOSITORY);
-    assertEquals(session.getWorkspace().getName(), BookstoreConstant.BOOKSTORE_TEST_WORKSPACE);
-
-    log.info("--- test Login successfully ---\n");
+    // init default node must be used before getComponentInstance Bookstorage
+    bookStorage = (BookStorage) eContainer.getComponentInstanceOfType(BookStorage.class);
   }
-  
-  
-  public void testGettingBookStorageComponent() 
-  {
-    log.info("--- test Getting Book Storage Component ---");
-    
-    bookStorage = (BookStorage) eContainer.getComponentInstance(BookStorage.class);
-    assertNotNull(bookStorage);
-    
-    log.info("--- test Getting Book Storage Component successfully ---\n");
-  }
- 
   
   public void testInsertBook() {
     
     log.info("--- test Insert Book ----");
-    
-    ComponentLocator.initDefaultNodes();
-    
+        
     try 
     {
       bookStorage.insertBook( new Book("1000", "Steve Jobs", null) );    
       Author vuTrongPhung = new Author("Vu Trong Phung");
       bookStorage.addAuthor(vuTrongPhung)
-                 .insertBook(
-                     new Book("1001", "So Do", vuTrongPhung) );
+                 .insertBook( new Book("1001", "So Do", vuTrongPhung) );
       
       assertTrue(bookStorage.hasBook("1000"));
       assertTrue(bookStorage.hasBook("1001"));
@@ -363,7 +329,7 @@ public class BookStorageTest extends TestCase
     log.info("--- test searching books with title like: OK ---\n");
   }
   
-  @SuppressWarnings({ "unchecked" })
+
   public void testSearchBookBySpecification() 
   {
     log.info("--- test searching book by specification ---");
@@ -375,7 +341,6 @@ public class BookStorageTest extends TestCase
                                              new BookTitleMatches("Java").or(new BookIsbnMatches("012")), null);
       
       assertEquals(new Integer(javaBooks.size()), new Integer(1));
-      assertTrue(((List<Book>) javaBooks).get(0).getTitle().contains("Java"));
       assertEquals(new Integer(otherJavaBooks.size()), new Integer(2));
     }
     catch (NoBookFoundException e)
