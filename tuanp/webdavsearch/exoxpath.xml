@@ -1,0 +1,8 @@
+<d:searchrequest xmlns:d="DAV:" xmlns:exo="http://exoplatform.com/jcr">
+<exo:xpath>
+sv:node[@sv:name='myapp:paragraph'][1]
+</exo:xpath>
+</d:searchrequest>
+<!-- 
+curl  http://localhost:8080/rest/jcr/repository/collaboration/Users/r___/ro___/roo___/root/Public/Mobile/ -X SEARCH -d @sql.xml
+-->

@@ -1,0 +1,8 @@
+<d:searchrequest xmlns:d="DAV:">
+<d:sql>
+SELECT * FROM exo:file WHERE contains(*, 'external')
+</d:sql>
+</d:searchrequest>
+<!-- 
+curl  http://localhost:8080/rest/jcr/repository/collaboration/Users/r___/ro___/roo___/root/Public/Mobile/ -X SEARCH -d @sql.xml
+-->
