@@ -43,6 +43,8 @@ import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.container.StandaloneContainer;
 import org.exoplatform.services.jcr.RepositoryService;
+import org.exoplatform.services.jcr.ext.app.SessionProviderService;
+import org.exoplatform.services.jcr.ext.common.SessionProvider;
 import org.exoplatform.services.jcr.impl.core.query.QueryImpl;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -73,9 +75,10 @@ public class BookStorageImpl implements BookStorage
     log.info("--- init BookStorageImpl ---");
     
     RepositoryService repoSer = (RepositoryService) ExoContainerContext
-        .getCurrentContainer().getComponentInstance(RepositoryService.class);
-    
-    session  = getSession( ExoContainerContext.getCurrentContainer(), repoSer );
+        .getCurrentContainer().getComponentInstanceOfType(RepositoryService.class);
+    SessionProviderService sessionSv = (SessionProviderService) ExoContainerContext
+    .getCurrentContainer().getComponentInstanceOfType(SessionProviderService.class);
+    session  = sessionSv.getSystemSessionProvider(null).getSession(repoSer.getCurrentRepository().getConfiguration().getDefaultWorkspaceName(), repoSer.getCurrentRepository()); //getSession( ExoContainerContext.getCurrentContainer(), repoSer );
     rootNode = session.getRootNode();  
   }
   

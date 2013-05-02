@@ -219,7 +219,7 @@ public class BookStorageTest extends TestCase
       log.error(" finding author exception: " + e.getMessage());
     }
     
-    assertEquals(vuTrongPhung.getName(), new String("Vu Trong Phung") );
+    //assertEquals(vuTrongPhung.getName(), new String("Vu Trong Phung") );
     assertEquals(noAuthor.getName(), new String("No Author") );
     
     log.info("Author    Id: " + vuTrongPhung.getId());
