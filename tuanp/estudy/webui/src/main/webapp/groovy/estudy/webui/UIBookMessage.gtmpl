@@ -1,8 +1,6 @@
-<%
-   import org.exoplatform.webui.core.UIComponent;
+<%import org.estudy.UIComponent;
    import org.gatein.common.text.EntityEncoder;
-   import org.exoplatform.commons.utils.HTMLEntityEncoder;
-%>
+   import org.exoplatform.commons.utils.HTMLEntityEncoder;%>
 <div class="UIBookMessage" id="$uicomponent.id">
   <p><%=uicomponent.getMessage() %></p>
 </div>

@@ -6,13 +6,13 @@
 	
 	<!-- Domain -->
 	<component>
-	  <key>org.exoplatform.bookstore.storage.BookStorage</key>
-	  <type>org.exoplatform.bookstore.storage.impl.BookStorageImpl</type>
-	</component>
+    <key>org.estudy.learning.storage.BookStorage</key>
+    <type>org.estudy.learning.storage.impl.BookStorageImpl</type>
+  </component>
 	
 	<!-- REST web service -->
 	<component>
-	  <type>org.exoplatform.bookstore.service.BookstoreWebService</type>
+	  <type>org.estudy.learning.service.BookstoreWebService</type>
 	</component>
 	
 	<component>

@@ -6,8 +6,8 @@
 	
 	<!-- Domain -->
 	<component>
-	  <key>org.exoplatform.bookstore.storage.BookStorage</key>
-	  <type>org.exoplatform.bookstore.storage.impl.BookStorageImpl</type>
+	  <key>org.estudy.learning.storage.BookStorage</key>
+	  <type>org.estudy.learning.storage.impl.BookStorageImpl</type>
 	</component>
 	
 	<!-- Start - Login Configuration Initialization -->
