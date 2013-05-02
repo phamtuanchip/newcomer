@@ -23,12 +23,6 @@ import org.exoplatform.component.test.ContainerScope;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 
-/**
- * Created by The eXo Platform SAS
- * @author : Hung nguyen
- *          hung.nguyen@exoplatform.com
- * May 7, 2008  
- */
 
 @ConfiguredBy({
   @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/exo.portal.component.portal-configuration.xml"),

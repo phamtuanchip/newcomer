@@ -46,7 +46,7 @@ public class EstudyServiceTest extends BaseServiceTestCase {
     super.setUp();
     repositoryService_ = getService(RepositoryService.class);
     organizationService_ = (OrganizationService) getService(OrganizationService.class);
-    storage_ = (JcrDataStorage) getService(OrganizationService.class);
+    storage_ = getService(JcrDataStorage.class);
   }
 
   private void loginUser(String userId) {
