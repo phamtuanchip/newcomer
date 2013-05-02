@@ -1,0 +1,33 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  
+  <groupId>org.tuanpham.estudy</groupId>
+  <artifactId>estudy</artifactId>
+  <version>1.0-SNAPSHOT</version>   
+  <packaging>pom</packaging>
+  
+  <name>E Study</name>
+  
+  <modules>
+    <module>service</module>
+    <module>webui</module>
+  </modules>
+  
+  <properties>
+    <project.version>1.0-SNAPSHOT</project.version>
+    <org.exoplatform.jcr.version>1.14.0-GA</org.exoplatform.jcr.version>
+    <org.exoplatform.kernel.version>2.3.0-GA</org.exoplatform.kernel.version>
+    <org.exoplatform.portal.version>3.2.1-PLF</org.exoplatform.portal.version>
+    <junit.version>3.8.1</junit.version>
+    <org.slf4j.version>1.5.8</org.slf4j.version>
+    <org.hsqldb.version>1.8.0.10</org.hsqldb.version>
+    <javax.servlet.version>2.5</javax.servlet.version>
+    <javax.portlet.version>2.0</javax.portlet.version>
+    <org.exoplatform.commons.version>1.1.4</org.exoplatform.commons.version>
+    <org.exoplatform.ws.version>2.2.9-GA</org.exoplatform.ws.version>
+  </properties>
+  
+</project>
