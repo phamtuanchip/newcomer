@@ -1,0 +1,405 @@
+/*
+ * Copyright (C) 2003-2012 eXo Platform SAS.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+package org.estudy.test;
+
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import org.estudy.learning.common.BookstoreConstant;
+import org.estudy.learning.domain.Author;
+import org.estudy.learning.domain.Book;
+import org.estudy.learning.exception.DuplicateBookException;
+import org.estudy.learning.exception.NoBookFoundException;
+import org.estudy.learning.service.ComponentLocator;
+import org.estudy.learning.specification.BookIsbnMatches;
+import org.estudy.learning.specification.BookTitleMatches;
+import org.estudy.learning.storage.BookStorage;
+import org.exoplatform.container.ExoContainer;
+import org.exoplatform.container.StandaloneContainer;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
+
+import junit.framework.TestCase;
+
+/**
+ * Created by The eXo Platform SAS
+ * Author : Anh-Tu NGUYEN
+ *          tuna@exoplatform.com
+ * Oct 2, 2012  
+ */
+public class BookStorageTest extends TestCase 
+{
+  
+  private static BookStorage bookStorage;
+  
+  private static Log log = (Log) ExoLogger.getLogger(BookStorageTest.class);
+  
+  private static ExoContainer eContainer;
+  
+  static 
+  {
+    initContainer();
+    initTestData();
+  }
+  
+  private static void initContainer() 
+  {
+    String containerConfig = ComponentLocator.class.getResource(
+      BookstoreConstant.CONTAINER_CONFIGURATION).toString();    
+    
+    try 
+    {
+      StandaloneContainer.addConfigurationURL(containerConfig);
+      eContainer = StandaloneContainer.getInstance();
+      ComponentLocator.setContainer(eContainer);
+      String loginConfig = BookStorageTest.class.getResource(BookstoreConstant.LOGIN_CONFIGURATION).toString();   
+      System.setProperty("java.security.auth.login.config", loginConfig);
+    }
+    catch (Exception e)
+    {
+      log.info("init container exception " + e.getMessage());
+    }
+  }
+  
+  private static void initTestData()
+  {    
+    ComponentLocator.emptyDefaultNodes();
+    ComponentLocator.initDefaultNodes();
+    
+    // init default node must be used before getComponentInstance Bookstorage
+    bookStorage = (BookStorage) eContainer.getComponentInstanceOfType(BookStorage.class);
+  }
+  
+  public void testInsertBook() {
+    
+    log.info("--- test Insert Book ----");
+        
+    try 
+    {
+      bookStorage.insertBook( new Book("1000", "Steve Jobs", null) );    
+      Author vuTrongPhung = new Author("Vu Trong Phung");
+      bookStorage.addAuthor(vuTrongPhung)
+                 .insertBook( new Book("1001", "So Do", vuTrongPhung) );
+      
+      assertTrue(bookStorage.hasBook("1000"));
+      assertTrue(bookStorage.hasBook("1001"));
+    }
+    catch (Exception e) 
+    {
+      log.error("--- insert book exception ---" + e.getMessage());
+    }
+      
+    log.info("--- test Insert Book successfully ----\n");
+  }
+  
+  public void testAddAuthor() 
+  {
+    log.info("--- test Adding Author ---");
+    
+    try 
+    {
+      bookStorage.addAuthor( new Author("Walter Isaacson") );
+      assertTrue(bookStorage.hasAuthor("Walter Isaacson"));
+    }
+    catch(Exception e)
+    {
+      log.error("exception in adding author: " + e.getStackTrace());
+    }
+    
+    log.info("--- test Adding Author successfully ---\n");
+  }
+  
+ 
+  public void testGetBookByIsbn() 
+  {
+    log.info("--- test Getting Book by Isbn ---");
+    
+    Book sodoBook = null;
+    
+    try 
+    {
+      sodoBook = bookStorage.getBookByIsbn("1001");
+    } 
+    catch (Exception e) 
+    {
+      log.error(" finding book exception: " + e.getMessage());
+    }
+    
+    assertEquals(sodoBook.getIsbn(), new String("1001") );
+    assertEquals(sodoBook.getAuthor().getName(), new String("Vu Trong Phung"));
+    
+    log.info("author name " + sodoBook.getAuthor().getName());
+    log.info("author id   " + sodoBook.getAuthor().getId());
+    log.info("--- test Getting Book by Isbn successfully ---\n");   
+  }
+  
+  public void testHasBook(String isbn) 
+  {
+    log.info("--- test Having Already A Book With Isbn ---");
+    
+    try 
+    {
+      assertTrue(bookStorage.hasBook(new String("1001")));
+    } 
+    catch (Exception e) 
+    {
+      log.error("exception: " + e.getMessage());
+    }
+    
+    log.info("--- test Having Already A Book With Isbn successfully ---\n");
+  }
+  
+  public void testAddingDuplicateBook()
+  {
+    log.info("--- test AddingDuplicateBook ---");
+
+    try
+    {
+      bookStorage.insertBook(new Book("1000", "Steve", null));
+    }
+    catch (DuplicateBookException e)
+    {
+      log.info("Dupplicate Book Exception: " + e.getMessage());
+    }
+    catch (Exception e)
+    {
+      log.error("exception: " + e.getMessage());
+    }
+    
+    log.info("--- test AddingDuplicateBook successfully ---\n");
+  }
+  
+  
+  public void testAddingDuplicateAuthor()
+  {
+    log.info("--- test AddingDuplicateAuthor ---");
+
+    try
+    {
+      bookStorage.addAuthor(new Author("Vu Trong Phung"));
+    }
+    catch (Exception e)
+    {
+      log.info("Dupplicate Author Exception: " + e.getMessage());
+    }
+    
+    log.info("--- test AddingDuplicateAuthor successfully ---\n");
+  }
+  
+  public void testGetAuthorByName() 
+  {
+    log.info("--- test Getting Author by Name ---");
+    
+    Author vuTrongPhung = null;
+    Author noAuthor     = null;
+    
+    try 
+    {
+      vuTrongPhung = bookStorage.getAuthorByName("Vu Trong Phung");
+      noAuthor     = bookStorage.getAuthorByName("ABCDEFGH");
+    } 
+    catch (Exception e) 
+    {
+      log.error(" finding author exception: " + e.getMessage());
+    }
+    
+    assertEquals(vuTrongPhung.getName(), new String("Vu Trong Phung") );
+    assertEquals(noAuthor.getName(), new String("No Author") );
+    
+    log.info("Author    Id: " + vuTrongPhung.getId());
+    log.info("No Author Id: " + noAuthor.getId());
+
+    log.info("--- test Getting Author by Name successfully ---\n");   
+  }
+  
+  
+  public void testRemoveBook() 
+  {
+    log.info("--- test Removing Book ---");
+    
+    Book doraemon = new Book("1002", "Doraemon", null);
+    
+    try 
+    {
+      bookStorage.insertBook(doraemon)
+                 .removeBook(doraemon.getIsbn());
+      assertFalse(bookStorage.hasBook(doraemon.getIsbn()));
+    } 
+    catch (Exception e) 
+    {
+      log.error("remove book exception " + e.getMessage());
+    }
+    
+    log.info("--- test Removing Book successfully ---\n");
+  }
+  
+  public void testGetAllBook()
+  {
+    log.info("--- test Getting All Books ---");
+    
+    Set<Book> allBooks = new HashSet<Book>();
+    
+    try
+    {
+      allBooks = bookStorage.getAllBooks();
+      assertFalse(allBooks.isEmpty());
+    }
+    catch (Exception e)
+    {
+      log.error("get all book exception " + e.getMessage());
+    }
+    
+    Iterator<Book> it = (Iterator<Book>) allBooks.iterator();
+    while (it.hasNext()) 
+    {
+      Book book = (Book) it.next();
+      log.info("book isbn  : " + book.getIsbn());
+      log.info("book title : " + book.getTitle());
+      log.info("book author: " + book.getAuthor().getName());
+    }
+    
+    log.info("--- test Getting Book successfully ---\n");
+  }
+  
+  public void testGetBooksFromAuthor() 
+  {
+    log.info("--- test Getting Books From Author ---");
+    
+    Author hoChiMinh = new Author("Ho Chi Minh");
+    
+    try 
+    {
+      bookStorage.addAuthor(hoChiMinh)
+                 .insertBook(new Book("1003", "Nhat Ki Trong Tu", hoChiMinh))
+                 .insertBook(new Book("1004", "Tuyen Ngon Doc Lap", hoChiMinh));
+      List<Book> hoChiMinhBooks = bookStorage.getBooksFromAuthor(hoChiMinh);
+      
+      Iterator<Book> it = hoChiMinhBooks.iterator();
+      while (it.hasNext()) 
+        log.info("Book title " + ((Book) it.next()).getTitle());
+      
+      assertEquals(new Integer(hoChiMinhBooks.size()), new Integer(2));
+    }
+    catch (Exception e)
+    {
+      log.error("getting book from author exception " + e.getMessage());
+    }
+  
+    log.info("--- test Getting Books From Author successfully ---\n");
+  }
+  
+  public void testSearchBookWithTitleLike()
+  {
+    log.info("--- test searching books with title like ---");
+    
+    try
+    {
+      bookStorage.insertBook(new Book("1005", "Head First Java", null))
+                 .insertBook(new Book("1006", "Java Programming", null));
+      List<Book> javaBooks = bookStorage.searchBookWithTitleLike("Java");
+      assertEquals(new Integer(javaBooks.size()), new Integer(2));
+      
+      bookStorage.searchBookWithTitleLike("noBooksWithNameLikeThis");
+    }
+    catch (NoBookFoundException e)
+    {
+      log.info("NoBookFound exception: " + e.getMessage());
+    }
+    catch (Exception e)
+    {
+      log.error("searching book with title like exception " + e.getMessage()); 
+    }
+    
+    log.info("--- test searching books with title like: OK ---\n");
+  }
+  
+
+  public void testSearchBookBySpecification() 
+  {
+    log.info("--- test searching book by specification ---");
+    
+    try 
+    {
+      Set<Book> javaBooks = bookStorage.searchBookBySpecification(new BookTitleMatches("Java"), 1);
+      Set<Book> otherJavaBooks = bookStorage.searchBookBySpecification(
+                                             new BookTitleMatches("Java").or(new BookIsbnMatches("012")), null);
+      
+      assertEquals(new Integer(javaBooks.size()), new Integer(1));
+      assertEquals(new Integer(otherJavaBooks.size()), new Integer(2));
+    }
+    catch (NoBookFoundException e)
+    {
+      log.error("NoBookFound exception: " + e.getMessage());
+    }
+    catch (Exception e)
+    {
+      log.error("searching book by specification exception " + e.getMessage()); 
+    }
+    
+    log.info("--- test searching book by specification: OK ---\n");
+  }
+  
+  
+  public void testSearchingBookByAuthorName()
+  {
+    log.info("--- test searching book by authorname ---");
+    
+    try
+    {
+      Author exo = new Author("exo");
+      bookStorage.addAuthor(exo)
+                 .insertBook(new Book("1007", "Exo JCR", exo))
+                 .insertBook(new Book("1008", "Exo WebUI", exo));
+      Set<Book> exoBooks = bookStorage.searchBookByAuthorName("exo", null);
+      assertEquals(new Integer(exoBooks.size()), new Integer(2));
+    }
+    catch (NoBookFoundException e)
+    {
+      log.error("NoBookFound exception: " + e.getMessage());
+    }
+    catch (Exception e)
+    {
+      log.error("searching book by specification exception " + e.getMessage()); 
+    }
+    
+    log.info("--- test searching book by authorname: OK ---\n");
+  }
+  
+  public void testUpdateBook() throws Exception
+  {
+    log.info("--- test updating book ---");
+    
+    try 
+    {
+      bookStorage.insertBook(new Book("1009", "eXo JS", new Author("exo")));
+      bookStorage.addAuthor(new Author("eXo Platform"))
+                 .updateBook(new Book("1009", "eXo JS 2Ed", new Author("eXo Platform")));
+      Book eXoBook = bookStorage.getBookByIsbn("1009");
+
+      assertEquals(eXoBook.getTitle(), "eXo JS 2Ed");
+      assertEquals(eXoBook.getAuthor().getName(), "eXo Platform");
+    }
+    catch (Exception e)
+    {
+      log.error("update book exception " + e.getMessage());
+    }
+    
+    log.info("--- test updating book: OK ---\n");
+  }
+}
