@@ -14,30 +14,26 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.estudy.learning.exception;
+package org.estudy.ui.portlet;
 
-/**
- * Created by The eXo Platform SAS
- * Author : Anh-Tu NGUYEN
- *          tuna@exoplatform.com
- * Oct 3, 2012  
- */
-public class DuplicateAuthorException extends Exception
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
+import org.exoplatform.webui.config.annotation.ComponentConfig;
+import org.exoplatform.webui.core.UIPortletApplication;
+import org.exoplatform.webui.core.lifecycle.UIApplicationLifecycle;
+
+
+@ComponentConfig(
+  lifecycle = UIApplicationLifecycle.class,
+  template  = "app:/groovy/estudy/webui/EStudyPortlet.gtmpl"
+)
+public class EStudyPortlet extends UIPortletApplication 
 {
-  /**
-   * generated serail uid
-   */
+  public static Log log = ExoLogger.getExoLogger(EStudyPortlet.class);
   
-  private static final long serialVersionUID = 5100887347786608720L;
-
-  public DuplicateAuthorException(String message) 
+  public EStudyPortlet() throws Exception 
   {
-    super(message);
   }
   
-  public DuplicateAuthorException() 
-  {
-    super();
-  }
-   
+  
 }

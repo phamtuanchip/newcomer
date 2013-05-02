@@ -44,22 +44,5 @@
         <supported-locale>en</supported-locale>
         <resource-bundle>locale.portlet.estudy.EstudyPortlet</resource-bundle>
         
-        <!--  
-        <portlet-info>
-            <title>Bookstore Portlet</title>
-            <short-title>Bookstore Portlet</short-title>
-            <keywords>bookstore</keywords>
-        </portlet-info>
-        -->
-        
-        <!--  why should we add template here
-        <portlet-preferences>
-          <preference>
-            <name>template</name>
-            <value>app:/groovy/bookstore/portlet/BookstorePortlet.gtmpl</value>
-            <read-only>false</read-only>
-          </preference>
-        </portlet-preferences>
-        -->
     </portlet>
 </portlet-app>

@@ -16,8 +16,8 @@
 
   <javascript>
     <param>
-      <js-module>eXo.bookstore.UIBookstorePortlet</js-module>
-      <js-path>/javascript/eXo/bookstore/UIBookstorePortlet.js</js-path>
+      <js-module>org.estudy</js-module>
+      <js-path>/javascript/estudy/estudy.js</js-path>
     </param>
   </javascript>
 

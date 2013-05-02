@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2003-2012 eXo Platform SAS.
+ * Copyright (C) 2003-2013 eXo Platform SAS.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -14,18 +14,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.estudy.learning.specification;
+package org.estudy.learning.storage;
+
+import javax.jcr.Node;
 
 /**
  * Created by The eXo Platform SAS
- * Author : Anh-Tu Nguyen
- *          tuna@exoplatform.com
- * Oct 17, 2012  
+ * Author : eXoPlatform
+ *          exo@exoplatform.com
+ * May 2, 2013  
  */
-public class BookIsbnMatches extends BookSpecification
-{
-  public BookIsbnMatches(String bookIsbn)
-  {
-    super("exo:isbn LIKE '%" + bookIsbn + "%' ");
-  }
+public interface DataStorage {
+  public Node getElearningStorageHome() throws Exception;
 }

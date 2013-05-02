@@ -1,8 +1,0 @@
-<%
-  def rcontext = _ctx.getRequestContext() ;
-  rcontext.getJavascriptManager().addJavascript('eXo.bookstore.UIBookstorePortlet.updateAuthor();') ;
-  rcontext.getJavascriptManager().addJavascript('eXo.bookstore.UIBookstorePortlet.updateBook();') ;
-%>
-<div id="UIBookstorePortlet" class="UIBookstorePortlet">
-  <% uicomponent.renderChildren(); %>
-</div>

@@ -1,6 +1,6 @@
 <webui-configuration>
   <application>
-    <ui-component-root>org.exoplatform.bookstore.portlet.UIBookstorePortlet</ui-component-root>
+    <ui-component-root>org.estudy.ui.portlet.EStudyPortlet</ui-component-root>
     <state-manager>org.exoplatform.webui.application.portlet.ParentAppStateManager</state-manager>
     
     <!--  do we have to use application lifecycle listeners
