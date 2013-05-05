@@ -16,7 +16,17 @@
  */
 package org.estudy.learning.storage;
 
+import java.util.Collection;
+
+import javax.jcr.ItemExistsException;
+import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
+import javax.jcr.RepositoryException;
+
+import org.estudy.learning.model.ECategory;
+import org.estudy.learning.model.ESession;
+import org.estudy.learning.model.ETesting;
+import org.exoplatform.services.organization.OrganizationConfig.User;
 
 /**
  * Created by The eXo Platform SAS
@@ -25,5 +35,16 @@ import javax.jcr.Node;
  * May 2, 2013  
  */
 public interface DataStorage {
-  public Node getElearningStorageHome() throws Exception;
+  public Node getEStorageHome() throws RepositoryException, Exception;
+  public void saveCategory(ECategory category) throws ItemExistsException;
+  public Collection<ECategory> getCategories() throws Exception;
+  public ECategory getCategory(String name) throws ItemNotFoundException;
+  public void removeCategory(String id) throws Exception;
+  public void saveSession(ESession session) throws RepositoryException;
+  public Collection<ESession> getSessions() throws RepositoryException;
+  public ESession getSession(String id) throws ItemNotFoundException;
+  public void saveTesting(User user) throws RepositoryException;
+  public ETesting getTestingScore(String uid) throws ItemNotFoundException;
+  
+  
 }

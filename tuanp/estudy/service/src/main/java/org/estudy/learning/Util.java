@@ -239,6 +239,8 @@ public class Util {
 
   public static final String JCR_SCORE                  = "jcr:score";
   
-  final public static String ESTUDY_APP               = "eStudyApplication";
+  final public static String E_STUDY               = "estudy";
+  final public static String E_STUDY_APP               = "estudyhome";
+  final public static String E_STUDY_CAT              = "ecategory";
 
 }

@@ -19,6 +19,8 @@ package org.estudy.test;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.estudy.learning.Util;
+import org.estudy.learning.model.ECategory;
 import org.estudy.learning.storage.DataStorage;
 import org.estudy.learning.storage.impl.JcrDataStorage;
 import org.exoplatform.services.jcr.RepositoryService;
@@ -54,7 +56,7 @@ public class EstudyServiceTest extends BaseServiceTestCase {
     ConversationState state = new ConversationState(identity);
     ConversationState.setCurrent(state);
   }
-
+  //mvn test -Dtest=EstudyServiceTest#testInitServices
   public void testInitServices() throws Exception{
 
       assertNotNull(repositoryService_) ;
@@ -66,6 +68,21 @@ public class EstudyServiceTest extends BaseServiceTestCase {
 
       assertNotNull(storage_);
 
+  }
+  //mvn test -Dtest=EstudyServiceTest#testEStoreHome
+  public void testEStoreHome() throws Exception {
+	  
+	  assertNotNull(storage_.getEStorageHome());
+	  
+	  assertEquals(Util.E_STUDY_APP,storage_.getEStorageHome().getName());
+  }
+  //mvn test -Dtest=EstudyServiceTest#testECategory
+  public void testECategory() throws Exception {
+	  ECategory e = new ECategory("Test category");
+	  storage_.saveCategory(e);
+	  assertNotNull(storage_.getCategories());
+	  assertEquals(1, storage_.getCategories().size());
+	  
   }
 
 }

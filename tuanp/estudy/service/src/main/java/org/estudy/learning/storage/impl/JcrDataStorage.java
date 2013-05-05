@@ -16,10 +16,20 @@
  */
 package org.estudy.learning.storage.impl;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
+import javax.jcr.ItemExistsException;
+import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
+import javax.jcr.RepositoryException;
 
 import org.estudy.learning.Util;
+import org.estudy.learning.model.ECategory;
+import org.estudy.learning.model.ESession;
+import org.estudy.learning.model.ETesting;
 import org.estudy.learning.storage.DataStorage;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
@@ -29,6 +39,7 @@ import org.exoplatform.services.jcr.ext.common.SessionProvider;
 import org.exoplatform.services.jcr.ext.hierarchy.NodeHierarchyCreator;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.services.organization.OrganizationConfig.User;
 
 /**
  * Created by The eXo Platform SAS
@@ -48,16 +59,29 @@ public class JcrDataStorage implements DataStorage {
     sessionProviderService_ = (SessionProviderService) container.getComponentInstanceOfType(SessionProviderService.class);
   }
 
-  public Node getElearningStorageHome() throws Exception {
+  public Node getEStorageHome() throws RepositoryException, Exception {
     SessionProvider sProvider = createSessionProvider();
     Node publicApp = nodeHierarchyCreator_.getPublicApplicationNode(sProvider); 
     try {
-      return publicApp.getNode(Util.ESTUDY_APP);
+      return publicApp.getNode(Util.E_STUDY_APP);
     } catch (PathNotFoundException e) {
-      Node calendarApp = publicApp.addNode(Util.ESTUDY_APP, Util.NT_UNSTRUCTURED);
+      Node eApp = publicApp.addNode(Util.E_STUDY_APP, Util.NT_UNSTRUCTURED);
       publicApp.getSession().save();
-      return calendarApp;
+      return eApp;
     }
+  }
+  
+  private Node getECategoryHome() throws RepositoryException, Exception {
+	  Node eHome = getEStorageHome();
+	  try {
+		return  eHome.getNode(Util.E_STUDY_CAT);
+	} catch (PathNotFoundException e) {
+		eHome.addNode(Util.E_STUDY_CAT, Util.NT_UNSTRUCTURED);
+		eHome.getSession().save();
+		return eHome.getNode(Util.E_STUDY_CAT);
+	}  
+	 
+	  
   }
   
   public SessionProvider createSessionProvider() {
@@ -68,4 +92,78 @@ public class JcrDataStorage implements DataStorage {
     }
     return SessionProvider.createSystemProvider();
   }
+
+@Override
+public void saveCategory(ECategory category) throws ItemExistsException{
+	try {
+		Node catHome = getECategoryHome();
+		Node cat = catHome.addNode(category.getId(), ECategory.NT_NAME);
+		cat.setProperty(ECategory.P_NAME, category.getName());
+		cat.addMixin(Util.MIX_REFERENCEABLE);
+		cat.save();
+	} catch (ItemExistsException e) {
+		throw e;
+	} catch (Exception re) {
+		re.printStackTrace();
+	}
+	
+}
+
+@Override
+public Collection<ECategory> getCategories() throws Exception {
+	try {
+		Node catHome = getECategoryHome();
+		NodeIterator it = catHome.getNodes();
+		Collection<ECategory> list = new ArrayList<ECategory>();
+		while (it.hasNext()) {
+			list.add(new ECategory(it.nextNode()));
+		}
+		return list;
+	} catch (Exception e){
+		e.printStackTrace();
+	}
+	return null;
+}
+
+@Override
+public ECategory getCategory(String name) throws ItemNotFoundException {
+	// TODO Auto-generated method stub
+	return null;
+}
+
+@Override
+public void saveSession(ESession session) throws RepositoryException {
+	// TODO Auto-generated method stub
+	
+}
+
+@Override
+public Collection<ESession> getSessions() throws RepositoryException {
+	// TODO Auto-generated method stub
+	return null;
+}
+
+@Override
+public ESession getSession(String id) throws ItemNotFoundException {
+	// TODO Auto-generated method stub
+	return null;
+}
+
+@Override
+public void saveTesting(User user) throws RepositoryException {
+	// TODO Auto-generated method stub
+	
+}
+
+@Override
+public ETesting getTestingScore(String uid) throws ItemNotFoundException {
+	// TODO Auto-generated method stub
+	return null;
+}
+
+@Override
+public void removeCategory(String id) throws Exception {
+	// TODO Auto-generated method stub
+	
+}
 }
