@@ -107,3 +107,5 @@ target/
 
 # Misc
 *.swp
+# LOG
+*.log

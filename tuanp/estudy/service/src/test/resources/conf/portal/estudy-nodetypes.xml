@@ -80,16 +80,6 @@
         <valueConstraints/>
       </propertyDefinition>
 
-      <!-- reference to  exo:category -->
-      <propertyDefinition name="exo:rfcategory" requiredType="Reference" autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" multiple="false">
-        <valueConstraints/>
-      </propertyDefinition>
-
-      <!-- reference to  exo:question -->
-      <propertyDefinition name="exo:rfquestion" requiredType="Reference" autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" multiple="false">
-        <valueConstraints/>
-      </propertyDefinition>
-      
     </propertyDefinitions>
     <childNodeDefinitions>
       <childNodeDefinition name="exo:content" defaultprimaryType="nt:file" autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" sameNameSiblings="false">

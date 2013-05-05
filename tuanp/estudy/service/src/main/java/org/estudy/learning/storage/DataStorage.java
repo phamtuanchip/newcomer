@@ -36,12 +36,14 @@ import org.exoplatform.services.organization.OrganizationConfig.User;
  */
 public interface DataStorage {
   public Node getEStorageHome() throws RepositoryException, Exception;
-  public void saveCategory(ECategory category) throws ItemExistsException;
+  
+  public void saveCategory(ECategory category, boolean isNew) throws ItemExistsException, Exception;
   public Collection<ECategory> getCategories() throws Exception;
-  public ECategory getCategory(String name) throws ItemNotFoundException;
+  public ECategory getCategory(String i) throws ItemNotFoundException;
   public void removeCategory(String id) throws Exception;
-  public void saveSession(ESession session) throws RepositoryException;
-  public Collection<ESession> getSessions() throws RepositoryException;
+  
+  public void saveSession(ESession session, boolean isNew) throws ItemExistsException, Exception;
+  public Collection<ESession> getSessions() throws Exception;
   public ESession getSession(String id) throws ItemNotFoundException;
   public void saveTesting(User user) throws RepositoryException;
   public ETesting getTestingScore(String uid) throws ItemNotFoundException;

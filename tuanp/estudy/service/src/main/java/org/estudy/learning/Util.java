@@ -242,5 +242,5 @@ public class Util {
   final public static String E_STUDY               = "estudy";
   final public static String E_STUDY_APP               = "estudyhome";
   final public static String E_STUDY_CAT              = "ecategory";
-
+  final public static String E_STUDY_SES              = "esession";
 }

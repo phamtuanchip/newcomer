@@ -19,8 +19,11 @@ package org.estudy.test;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.jcr.ItemExistsException;
+
 import org.estudy.learning.Util;
 import org.estudy.learning.model.ECategory;
+import org.estudy.learning.model.ESession;
 import org.estudy.learning.storage.DataStorage;
 import org.estudy.learning.storage.impl.JcrDataStorage;
 import org.exoplatform.services.jcr.RepositoryService;
@@ -38,51 +41,82 @@ import org.exoplatform.services.security.MembershipEntry;
  */
 public class EstudyServiceTest extends BaseServiceTestCase {
 
-  private RepositoryService repositoryService_ ;
-  private DataStorage  storage_;
-  private static String   username = "root";
-  public Collection<MembershipEntry> membershipEntries = new ArrayList<MembershipEntry>();
-  private OrganizationService organizationService_;
+	private RepositoryService repositoryService_ ;
+	private DataStorage  storage_;
+	private static String   username = "root";
+	public Collection<MembershipEntry> membershipEntries = new ArrayList<MembershipEntry>();
+	private OrganizationService organizationService_;
 
-  public void setUp() throws Exception {
-    super.setUp();
-    repositoryService_ = getService(RepositoryService.class);
-    organizationService_ = (OrganizationService) getService(OrganizationService.class);
-    storage_ = getService(JcrDataStorage.class);
-  }
+	public void setUp() throws Exception {
+		super.setUp();
+		repositoryService_ = getService(RepositoryService.class);
+		organizationService_ = (OrganizationService) getService(OrganizationService.class);
+		storage_ = getService(JcrDataStorage.class);
+	}
 
-  private void loginUser(String userId) {
-    Identity identity = new Identity(userId, membershipEntries);
-    ConversationState state = new ConversationState(identity);
-    ConversationState.setCurrent(state);
-  }
-  //mvn test -Dtest=EstudyServiceTest#testInitServices
-  public void testInitServices() throws Exception{
+	private void loginUser(String userId) {
+		Identity identity = new Identity(userId, membershipEntries);
+		ConversationState state = new ConversationState(identity);
+		ConversationState.setCurrent(state);
+	}
+	//mvn test -Dtest=EstudyServiceTest#testInitServices
+	public void testInitServices() throws Exception{
 
-      assertNotNull(repositoryService_) ;
-      assertEquals(repositoryService_.getDefaultRepository().getConfiguration().getName(), "repository");
-      assertEquals(repositoryService_.getDefaultRepository().getConfiguration().getDefaultWorkspaceName(), "portal-test");
-      assertNotNull(organizationService_) ;
+		assertNotNull(repositoryService_) ;
+		assertEquals(repositoryService_.getDefaultRepository().getConfiguration().getName(), "repository");
+		assertEquals(repositoryService_.getDefaultRepository().getConfiguration().getDefaultWorkspaceName(), "portal-test");
+		assertNotNull(organizationService_) ;
 
-      //assertEquals(organizationService_.getUserHandler().findAllUsers().getSize(), 8);
+		//assertEquals(organizationService_.getUserHandler().findAllUsers().getSize(), 8);
 
-      assertNotNull(storage_);
+		assertNotNull(storage_);
 
-  }
-  //mvn test -Dtest=EstudyServiceTest#testEStoreHome
-  public void testEStoreHome() throws Exception {
-	  
-	  assertNotNull(storage_.getEStorageHome());
-	  
-	  assertEquals(Util.E_STUDY_APP,storage_.getEStorageHome().getName());
-  }
-  //mvn test -Dtest=EstudyServiceTest#testECategory
-  public void testECategory() throws Exception {
-	  ECategory e = new ECategory("Test category");
-	  storage_.saveCategory(e);
-	  assertNotNull(storage_.getCategories());
-	  assertEquals(1, storage_.getCategories().size());
-	  
-  }
+	}
+	//mvn test -Dtest=EstudyServiceTest#testEStoreHome
+	public void testEStoreHome() throws Exception {
+
+		assertNotNull(storage_.getEStorageHome());
+
+		assertEquals(Util.E_STUDY_APP,storage_.getEStorageHome().getName());
+	}
+	//mvn test -Dtest=EstudyServiceTest#testECategory
+	public void testECategory() throws Exception {
+		ECategory e = new ECategory("Test category");
+		storage_.saveCategory(e, true);
+		assertNotNull(storage_.getCategories());
+		assertEquals(1, storage_.getCategories().size());
+
+		e.setName("new name");
+		storage_.saveCategory(e, false);
+		assertEquals("new name", storage_.getCategory(e.getId()).getName());
+
+		try {
+			storage_.saveCategory(new ECategory("new name"), true);
+		} catch (ItemExistsException e2) {
+			log.info("category already exits!");
+			assertTrue(true);
+		}
+		assertEquals(1, storage_.getCategories().size());
+
+		storage_.removeCategory(e.getId());
+		for (ECategory o : storage_.getCategories()){
+			log.info(e.getName());
+		}
+		assertEquals(0, storage_.getCategories().size());
+
+
+	}
+
+	//mvn test -Dtest=EstudyServiceTest#testESession
+	public void testESession() throws Exception {
+		ECategory e = new ECategory("Test category");
+		storage_.saveCategory(e, true);
+		ESession es = new ESession();
+		storage_.saveSession(es, true);
+		
+		assertNotNull(storage_.getSessions());
+		assertEquals(1, storage_.getSessions().size());
+		
+	}
 
 }
