@@ -2,8 +2,6 @@ package org.estudy.learning.model;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 
 import org.estudy.learning.Util;
 import org.exoplatform.services.jcr.util.IdGenerator;

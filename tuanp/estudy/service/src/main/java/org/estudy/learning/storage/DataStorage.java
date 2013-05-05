@@ -27,7 +27,7 @@ import org.estudy.learning.model.ECategory;
 import org.estudy.learning.model.EQuestion;
 import org.estudy.learning.model.ESession;
 import org.estudy.learning.model.ETesting;
-import org.exoplatform.services.organization.OrganizationConfig.User;
+import org.exoplatform.services.organization.User;
 
 /**
  * Created by The eXo Platform SAS
@@ -53,8 +53,9 @@ public interface DataStorage {
   public EQuestion getQuestion(String id) throws ItemNotFoundException;
   public void removeQuestion(String id) throws Exception;
   
-  public void saveTesting(User user) throws RepositoryException;
-  public ETesting getTestingScore(String uid) throws ItemNotFoundException;
+  public void saveTesting(User user, ETesting test, boolean isNew) throws Exception;
+  public Collection<ETesting> getTestingScore(String uId, Collection<String> tIds) throws RepositoryException;
+  public Collection<ETesting> getTestingScore(String uId) throws RepositoryException;
   
   
 }

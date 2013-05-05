@@ -26,10 +26,12 @@ import org.estudy.learning.Util;
 import org.estudy.learning.model.ECategory;
 import org.estudy.learning.model.EQuestion;
 import org.estudy.learning.model.ESession;
+import org.estudy.learning.model.ETesting;
 import org.estudy.learning.storage.DataStorage;
 import org.estudy.learning.storage.impl.JcrDataStorage;
 import org.exoplatform.services.jcr.RepositoryService;
 import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.services.organization.User;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.services.security.MembershipEntry;
@@ -107,63 +109,75 @@ public class EstudyServiceTest extends BaseServiceTestCase {
 	}
 
 	//mvn test -Dtest=EstudyServiceTest#testEQuestion
-		public void testEQuestion() throws Exception {
-			 
-			String title = "what is <a> tag?";
-			String[] answers = new String[]{"is html tag", "none of above", "a link tag", "a special char"};
-			String[] correct = new String[]{"is html tag","a link tag"};
-			String[] wrong1 = new String[]{"is html tag"};
-			String[] wrong2 = new String[]{"is html tag","a link tag","a special char"};
-			String[] wrong3 = new String[]{"is html tag","a special char"};
-			long point = 2 ;
-			EQuestion eq = new EQuestion();
-			eq.setTitle(title);
-			eq.setAnswers(Arrays.asList(answers));
-			eq.setCorrect(Arrays.asList(correct));
-			eq.setPoint(point);
-			storage_.saveQuestion(eq, true);
-			
-			assertNotNull(storage_.getQuestions());
-			assertEquals(1, storage_.getQuestions().size());
-			assertEquals(title,  storage_.getQuestion(eq.getId()).getTitle());
-			assertEquals(Arrays.asList(answers),  storage_.getQuestion(eq.getId()).getAnswers());
-			String[] answered = wrong1 ;
-			eq.setAnswered(Arrays.asList(answered));
-			storage_.saveQuestion(eq, false);
-			assertEquals(Arrays.asList(answered),  storage_.getQuestion(eq.getId()).getAnswered());
-			assertEquals(0, storage_.getQuestion(eq.getId()).getPoint());
-			
-			answered = wrong2 ;
-			eq.setAnswered(Arrays.asList(answered));
-			storage_.saveQuestion(eq, false);
-			assertEquals(Arrays.asList(answered),  storage_.getQuestion(eq.getId()).getAnswered());
-			assertEquals(0, storage_.getQuestion(eq.getId()).getPoint());
-			
-			answered = wrong3 ;
-			eq.setAnswered(Arrays.asList(answered));
-			storage_.saveQuestion(eq, false);
-			assertEquals(Arrays.asList(answered),  storage_.getQuestion(eq.getId()).getAnswered());
-			assertEquals(0, storage_.getQuestion(eq.getId()).getPoint());
-			
-			answered = correct ;
-			eq.setAnswered(Arrays.asList(answered));
-			storage_.saveQuestion(eq, false);
-			
-			assertEquals(point, storage_.getQuestion(eq.getId()).getPoint());
-			
-			try {
-				storage_.saveQuestion(new EQuestion(title), true);
-			} catch (ItemExistsException e2) {
-				log.info("question or answer already exits!");
-				assertTrue(true);
-			}
-			assertEquals(1, storage_.getQuestions().size());
+	public void testEQuestion() throws Exception {
 
-			storage_.removeQuestion(eq.getId());
-			assertEquals(0, storage_.getQuestions().size());
+		String title = "what is <a> tag?";
+		String[] answers = new String[]{"is html tag", "none of above", "a link tag", "a special char"};
+		String[] correct = new String[]{"is html tag","a link tag"};
+		String[] wrong1 = new String[]{"is html tag"};
+		String[] wrong2 = new String[]{"is html tag","a link tag","a special char"};
+		String[] wrong3 = new String[]{"is html tag","a special char"};
+		long point = 2 ;
+		EQuestion eq = new EQuestion();
+		eq.setTitle(title);
+		eq.setAnswers(Arrays.asList(answers));
+		eq.setCorrect(Arrays.asList(correct));
+		eq.setPoint(point);
+		storage_.saveQuestion(eq, true);
+
+		assertNotNull(storage_.getQuestions());
+		assertEquals(1, storage_.getQuestions().size());
+		assertEquals(title,  storage_.getQuestion(eq.getId()).getTitle());
+		assertEquals(Arrays.asList(answers),  storage_.getQuestion(eq.getId()).getAnswers());
+		String[] answered = wrong1 ;
+		eq.setAnswered(Arrays.asList(answered));
+		storage_.saveQuestion(eq, false);
+		assertEquals(Arrays.asList(answered),  storage_.getQuestion(eq.getId()).getAnswered());
+		assertEquals(0, storage_.getQuestion(eq.getId()).getPoint());
+
+		answered = wrong2 ;
+		eq.setAnswered(Arrays.asList(answered));
+		storage_.saveQuestion(eq, false);
+		assertEquals(Arrays.asList(answered),  storage_.getQuestion(eq.getId()).getAnswered());
+		assertEquals(0, storage_.getQuestion(eq.getId()).getPoint());
+
+		answered = wrong3 ;
+		eq.setAnswered(Arrays.asList(answered));
+		storage_.saveQuestion(eq, false);
+		assertEquals(Arrays.asList(answered),  storage_.getQuestion(eq.getId()).getAnswered());
+		assertEquals(0, storage_.getQuestion(eq.getId()).getPoint());
+
+		answered = correct ;
+		eq.setAnswered(Arrays.asList(answered));
+		storage_.saveQuestion(eq, false);
+
+		assertEquals(point, storage_.getQuestion(eq.getId()).getPoint());
+
+		try {
+			storage_.saveQuestion(new EQuestion(title), true);
+		} catch (ItemExistsException e2) {
+			log.info("question or answer already exits!");
+			assertTrue(true);
 		}
+		assertEquals(1, storage_.getQuestions().size());
 
-	
+		storage_.removeQuestion(eq.getId());
+		assertEquals(0, storage_.getQuestions().size());
+	}
+
+	//mvn test -Dtest=EstudyServiceTest#testETesting
+	public void testETesting() throws Exception {
+		ETesting test = new ETesting();
+		loginUser(username);
+		Identity current = ConversationState.getCurrent().getIdentity();
+		User user = organizationService_.getUserHandler().findUserByName(current.getUserId()) ;
+		storage_.saveTesting(user, test, true);
+		assertNotNull(storage_.getTestingScore(user.getUserName()));
+		assertEquals(1, storage_.getTestingScore(user.getUserName()).size());
+		
+
+	}
+
 	//mvn test -Dtest=EstudyServiceTest#testESession
 	public void testESession() throws Exception {
 		ECategory e = new ECategory("Test category");
@@ -173,17 +187,17 @@ public class EstudyServiceTest extends BaseServiceTestCase {
 		es.setTitle(title);
 		es.setCat(e.getId());
 		es.setDec("some description");
-		String question = "quest1"+Util.SEMI_COLON+"quest2";
-		es.setQuest(question);
+		String test = "test1"+Util.SEMI_COLON+"test2";
+		es.setQuest(test);
 		es.setVlink("htt://youtube.com");
 		es.setRflink("htt://w3chool.com");
-		
+
 		storage_.saveSession(es, true);
-		
+
 		assertNotNull(storage_.getSessions());
 		assertEquals(1, storage_.getSessions().size());
 		assertEquals(title,  storage_.getSession(es.getId()).getTitle());
-		assertEquals(Arrays.asList(question.split(Util.SEMI_COLON)),  storage_.getSession(es.getId()).getQuest());
+		assertEquals(Arrays.asList(test.split(Util.SEMI_COLON)),  storage_.getSession(es.getId()).getQuest());
 
 		try {
 			storage_.saveSession(new ESession(title), true);

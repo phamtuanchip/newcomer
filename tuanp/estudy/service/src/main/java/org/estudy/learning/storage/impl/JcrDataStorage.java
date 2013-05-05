@@ -19,6 +19,8 @@ package org.estudy.learning.storage.impl;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.jcr.ItemExistsException;
 import javax.jcr.ItemNotFoundException;
@@ -44,7 +46,7 @@ import org.exoplatform.services.jcr.ext.common.SessionProvider;
 import org.exoplatform.services.jcr.ext.hierarchy.NodeHierarchyCreator;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-import org.exoplatform.services.organization.OrganizationConfig.User;
+import org.exoplatform.services.organization.User;
 
 /**
  * Created by The eXo Platform SAS
@@ -92,50 +94,93 @@ public class JcrDataStorage implements DataStorage {
 		return ses;
 	}
 
-	private Node setQuestionProp(EQuestion e, Node ses){
+	private Node setQuestionProp(EQuestion e, Node ques){
 		try {
-			ses.setProperty(EQuestion.P_TITLE, e.getTitle());
-			ses.setProperty(EQuestion.P_ANSWER, e.getAnswers().toArray(new String[]{}));
+			ques.setProperty(EQuestion.P_TITLE, e.getTitle());
+			ques.setProperty(EQuestion.P_ANSWER, e.getAnswers().toArray(new String[]{}));
 			if(e.getAnswered() != null)
-			ses.setProperty(EQuestion.P_ANSWERED, e.getAnswered().toArray(new String[]{}));
-			ses.setProperty(EQuestion.P_CORRECT, e.getCorrect().toArray(new String[]{}));
-			ses.setProperty(EQuestion.P_POINT, e.getPoint());
+				ques.setProperty(EQuestion.P_ANSWERED, e.getAnswered().toArray(new String[]{}));
+			ques.setProperty(EQuestion.P_CORRECT, e.getCorrect().toArray(new String[]{}));
+			ques.setProperty(EQuestion.P_POINT, e.getPoint());
 		} catch (Exception e2) {
 			e2.printStackTrace();
 			log.info(e2.getMessage());
 			return null ;
 		}
-		return ses;
+		return ques;
 	}
 
-	private EQuestion getQuestionProp(Node ses){
+	private Node setTestingProp(ETesting e, Node tes){
+		try {
+			tes.setProperty(ETesting.P_TIME, e.getTime());
+			tes.setProperty(ETesting.P_POINT, e.getPoint());
+			tes.setProperty(ETesting.P_NOTE, e.getNote());
+			for(String q : e.getQuestId()){
+				Node quest = tes.addNode(q);
+				if(e.getAnswered(q) != null)
+					quest.setProperty(EQuestion.P_ANSWERED, e.getAnswered(q).toArray(new String[]{}));
+			}
+		} catch (Exception e2) {
+			log.info(e2.getMessage());
+			return null ;
+		}
+		return tes;
+	}
+
+	private ETesting getTestingProp(Node test){
+		ETesting e = new ETesting();
+		try {
+			e.setId(test.getName()); 
+			if(test.hasProperty(ETesting.P_NOTE)) 
+				e.setNote(test.getProperty(ETesting.P_NOTE).getString());
+			if(test.hasProperty(ETesting.P_POINT)) 
+				e.setPoint(test.getProperty(ETesting.P_POINT).getLong());
+			if(test.hasProperty(ETesting.P_TIME)) 
+				e.setPoint(test.getProperty(ETesting.P_TIME).getLong());
+			NodeIterator it = test.getNodes();
+			Map<String, Collection<String>> quest = new HashMap<String, Collection<String>>();
+			while (it.hasNext()) {
+				Node ques = it.nextNode();
+				if(ques.hasProperty(EQuestion.P_ANSWERED)) {
+					quest.put(ques.getName(), valuesToStrings(ques.getProperty(EQuestion.P_ANSWERED).getValues()));
+				}
+
+			}
+			e.setQuest(quest);
+		}catch (Exception e2) {
+			e2.printStackTrace();
+			log.info(e2.getMessage());
+			return null ;
+		}
+		return e;
+	}
+
+	private EQuestion getQuestionProp(Node ques){
 		EQuestion e = new EQuestion();
 		try {
-			e.setId(ses.getName());
-			if(ses.hasProperty(EQuestion.P_TITLE)) 
-				e.setTitle(ses.getProperty(EQuestion.P_TITLE).getString());
-			if(ses.hasProperty(EQuestion.P_ANSWER)) 
+			e.setId(ques.getName());
+			if(ques.hasProperty(EQuestion.P_TITLE)) 
+				e.setTitle(ques.getProperty(EQuestion.P_TITLE).getString());
+			if(ques.hasProperty(EQuestion.P_ANSWER)) 
 			{
-				Value[] values = ses.getProperty(EQuestion.P_ANSWER).getValues();
+				Value[] values = ques.getProperty(EQuestion.P_ANSWER).getValues();
 				e.setAnswers(valuesToString(values, Util.SEMI_COLON));
 			}
 
-			if(ses.hasProperty(EQuestion.P_ANSWERED)) 
+			if(ques.hasProperty(EQuestion.P_ANSWERED)) 
 			{
-				Value[] values = ses.getProperty(EQuestion.P_ANSWERED).getValues();
+				Value[] values = ques.getProperty(EQuestion.P_ANSWERED).getValues();
 				e.setAnswered(valuesToString(values, Util.SEMI_COLON));
 			}
-			
-			if(ses.hasProperty(EQuestion.P_CORRECT)) 
+
+			if(ques.hasProperty(EQuestion.P_CORRECT)) 
 			{
-				Value[] values = ses.getProperty(EQuestion.P_CORRECT).getValues();
+				Value[] values = ques.getProperty(EQuestion.P_CORRECT).getValues();
 				e.setCorrect(valuesToString(values, Util.SEMI_COLON));
 			}
-			if(ses.hasProperty(EQuestion.P_POINT)) {
+			if(ques.hasProperty(EQuestion.P_POINT)) {
 				if(e.getAnswered()!= null && e.getAnswered().size() == e.getCorrect().size() && e.getAnswered().containsAll(e.getCorrect()))  {
-					log.info("val ===============" + ses.getProperty(EQuestion.P_POINT).getLong());
-					
-					e.setPoint(ses.getProperty(EQuestion.P_POINT).getLong());
+					e.setPoint(ques.getProperty(EQuestion.P_POINT).getLong());
 				}
 				else e.setPoint(0);
 			}
@@ -238,13 +283,14 @@ public class JcrDataStorage implements DataStorage {
 		return sb.toString().replaceFirst(regex, "");
 	}
 
-	private Collection<String> valuesToStrings (Value[] values, String regex) throws Exception{
-		StringBuffer sb = new StringBuffer();
+	private Collection<String> valuesToStrings (Value[] values) throws Exception{
+		Collection<String> list = new ArrayList<String>();
 		for (Value v : values){
-			sb.append(regex).append(v.getString());
+			list.add(v.getString());
 		}
-		return Arrays.asList(sb.toString().replaceFirst(regex, "").split(regex));
+		return list;
 	}
+
 	private Node getECategoryHome() throws RepositoryException, Exception {
 		Node eHome = getEStorageHome();
 		try {
@@ -265,6 +311,17 @@ public class JcrDataStorage implements DataStorage {
 			eHome.addNode(Util.E_STUDY_QUEST, Util.NT_UNSTRUCTURED);
 			eHome.getSession().save();
 			return eHome.getNode(Util.E_STUDY_QUEST);
+		}  
+	}
+
+	private Node getETestingHome(String uid) throws RepositoryException, Exception {
+		Node uHome = nodeHierarchyCreator_.getUserNode(createSessionProvider(), uid);
+		try {
+			return  uHome.getNode(Util.E_STUDY_TEST);
+		} catch (PathNotFoundException e) {
+			uHome.addNode(Util.E_STUDY_QUEST, Util.NT_UNSTRUCTURED);
+			uHome.getSession().save();
+			return uHome.getNode(Util.E_STUDY_QUEST);
 		}  
 	}
 
@@ -398,21 +455,6 @@ public class JcrDataStorage implements DataStorage {
 	}
 
 	@Override
-	public void saveTesting(User user) throws RepositoryException {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public ETesting getTestingScore(String uid) throws ItemNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-
-
-	@Override
 	public void saveQuestion(EQuestion qestion, boolean isNew) throws ItemExistsException,
 	Exception {
 		Node qHome = getEQestionHome();
@@ -475,5 +517,50 @@ public class JcrDataStorage implements DataStorage {
 			log.info(e.getMessage());
 			throw e;
 		}
+	}
+
+	@Override
+	public void saveTesting(User user, ETesting test, boolean isNew)
+			throws Exception {
+		Node qHome = getETestingHome(user.getUserName());
+		Node testing ;
+		if(isNew){
+			try {
+				testing = setTestingProp(test, qHome.addNode(test.getId(), ETesting.NT_NAME));
+				testing.getSession().save();
+			} catch (Exception e) {
+				log.info(e.getMessage());
+				throw e;
+			}
+		} else {
+			testing = setTestingProp(test, qHome.getNode(test.getId()));
+			testing.save();
+		} 
+
+	}
+
+	@Override
+	public Collection<ETesting> getTestingScore(String uId,
+			Collection<String> tIds) throws RepositoryException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Collection<ETesting> getTestingScore(String uId)
+			throws RepositoryException {
+		try {
+			Node sesHome = getETestingHome(uId);
+			NodeIterator it = sesHome.getNodes();
+			Collection<ETesting> list = new ArrayList<ETesting>();
+			while (it.hasNext()) {
+				list.add(getTestingProp(it.nextNode()));
+			}
+			return list;
+		} catch (Exception e) {
+			log.info(e.getMessage());
+
+		}
+		return null;
 	}
 }
