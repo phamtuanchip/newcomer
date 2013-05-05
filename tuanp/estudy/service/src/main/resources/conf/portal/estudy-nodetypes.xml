@@ -33,6 +33,18 @@
        <propertyDefinition name="exo:answer" requiredType="String" autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" multiple="true">
         <valueConstraints/>
       </propertyDefinition>
+      
+      <propertyDefinition name="exo:correct" requiredType="String" autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" multiple="true">
+        <valueConstraints/>
+      </propertyDefinition>
+      
+       <propertyDefinition name="exo:answered" requiredType="String" autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" multiple="true">
+        <valueConstraints/>
+      </propertyDefinition>
+      
+      <propertyDefinition name="exo:point" requiredType="long" autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" multiple="false">
+        <valueConstraints/>
+      </propertyDefinition>
      
     </propertyDefinitions>
     
@@ -49,7 +61,7 @@
         <valueConstraints/>
       </propertyDefinition>
 
-       <propertyDefinition name="exo:point" requiredType="String" autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" multiple="false">
+       <propertyDefinition name="exo:point" requiredType="long" autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" multiple="false">
         <valueConstraints/>
       </propertyDefinition>
 
@@ -61,7 +73,16 @@
     </propertyDefinitions>
     
   </nodeType>
-
+ <nodeType  name="exo:eventAttachment" isMixin="false" hasOrderableChildNodes="false" primaryItemName="">
+      <supertypes>
+        <supertype>nt:file</supertype>
+      </supertypes>
+      <propertyDefinitions>
+        <propertyDefinition name="exo:fileName" requiredType="String" autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" multiple="false">
+          <valueConstraints/>
+        </propertyDefinition>        
+      </propertyDefinitions>  
+    </nodeType>    
   <nodeType name="exo:session" isMixin="false" hasOrderableChildNodes="false">
     <supertypes>
       <supertype>nt:base</supertype>
@@ -73,37 +94,28 @@
       <propertyDefinition name="exo:description" requiredType="String" autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" multiple="false">
         <valueConstraints/>
       </propertyDefinition>
+      <propertyDefinition name="exo:catId" requiredType="String" autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" multiple="false">
+        <valueConstraints/>
+      </propertyDefinition>
+      <propertyDefinition name="exo:questId" requiredType="String" autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" multiple="true">
+        <valueConstraints/>
+      </propertyDefinition>
       <propertyDefinition name="exo:rflink" requiredType="String" autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" multiple="false">
         <valueConstraints/>
       </propertyDefinition>
       <propertyDefinition name="exo:vlink" requiredType="String" autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" multiple="false">
         <valueConstraints/>
       </propertyDefinition>
-
-      <!-- reference to  exo:category -->
-      <propertyDefinition name="exo:rfcategory" requiredType="Reference" autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" multiple="false">
-        <valueConstraints/>
-      </propertyDefinition>
-
-      <!-- reference to  exo:question -->
-      <propertyDefinition name="exo:rfquestion" requiredType="Reference" autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" multiple="false">
-        <valueConstraints/>
-      </propertyDefinition>
-      
     </propertyDefinitions>
-    <childNodeDefinitions>
-      <childNodeDefinition name="exo:content" defaultprimaryType="nt:file" autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" sameNameSiblings="false">
-        <requiredPrimaryTypes>
-          <requiredPrimaryType>nt:file</requiredPrimaryType>
-        </requiredPrimaryTypes>
-      </childNodeDefinition>
-
-      <childNodeDefinition name="exo:video" defaultprimaryType="nt:file" autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" sameNameSiblings="false">
-        <requiredPrimaryTypes>
-          <requiredPrimaryType>nt:file</requiredPrimaryType>
-        </requiredPrimaryTypes>
-      </childNodeDefinition>
-    </childNodeDefinitions>
+    
+     <childNodeDefinitions>
+        <childNodeDefinition name="*" defaultPrimaryType="" autoCreated="false" mandatory="false"
+          onParentVersion="COPY" protected="false" sameNameSiblings="false">
+          <requiredPrimaryTypes>
+            <requiredPrimaryType>nt:unstructured</requiredPrimaryType>
+          </requiredPrimaryTypes>
+        </childNodeDefinition>        
+      </childNodeDefinitions>
   </nodeType>
    
 </nodeTypes>

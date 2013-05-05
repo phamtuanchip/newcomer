@@ -17,6 +17,7 @@
 package org.estudy.learning.storage.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 import javax.jcr.ItemExistsException;
@@ -25,11 +26,13 @@ import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
+import javax.jcr.Value;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 
 import org.estudy.learning.Util;
 import org.estudy.learning.model.ECategory;
+import org.estudy.learning.model.EQuestion;
 import org.estudy.learning.model.ESession;
 import org.estudy.learning.model.ETesting;
 import org.estudy.learning.storage.DataStorage;
@@ -73,6 +76,175 @@ public class JcrDataStorage implements DataStorage {
 		}
 	}
 
+
+	private Node setSessionProp(ESession e, Node ses){
+		try {
+			ses.setProperty(ESession.P_TITLE, e.getTitle());
+			ses.setProperty(ESession.P_CAT, e.getCat());
+			ses.setProperty(ESession.P_QUEST, e.getQuest().toArray(new String[]{}));
+			ses.setProperty(ESession.P_DEC, e.getDec());
+			ses.setProperty(ESession.P_RFLINK, e.getRflink());
+			ses.setProperty( ESession.P_VLINK, e.getVlink());
+		} catch (Exception e2) {
+			log.info(e2.getMessage());
+			return null ;
+		}
+		return ses;
+	}
+
+	private Node setQuestionProp(EQuestion e, Node ses){
+		try {
+			ses.setProperty(EQuestion.P_TITLE, e.getTitle());
+			ses.setProperty(EQuestion.P_ANSWER, e.getAnswers().toArray(new String[]{}));
+			if(e.getAnswered() != null)
+			ses.setProperty(EQuestion.P_ANSWERED, e.getAnswered().toArray(new String[]{}));
+			ses.setProperty(EQuestion.P_CORRECT, e.getCorrect().toArray(new String[]{}));
+			ses.setProperty(EQuestion.P_POINT, e.getPoint());
+		} catch (Exception e2) {
+			e2.printStackTrace();
+			log.info(e2.getMessage());
+			return null ;
+		}
+		return ses;
+	}
+
+	private EQuestion getQuestionProp(Node ses){
+		EQuestion e = new EQuestion();
+		try {
+			e.setId(ses.getName());
+			if(ses.hasProperty(EQuestion.P_TITLE)) 
+				e.setTitle(ses.getProperty(EQuestion.P_TITLE).getString());
+			if(ses.hasProperty(EQuestion.P_ANSWER)) 
+			{
+				Value[] values = ses.getProperty(EQuestion.P_ANSWER).getValues();
+				e.setAnswers(valuesToString(values, Util.SEMI_COLON));
+			}
+
+			if(ses.hasProperty(EQuestion.P_ANSWERED)) 
+			{
+				Value[] values = ses.getProperty(EQuestion.P_ANSWERED).getValues();
+				e.setAnswered(valuesToString(values, Util.SEMI_COLON));
+			}
+			
+			if(ses.hasProperty(EQuestion.P_CORRECT)) 
+			{
+				Value[] values = ses.getProperty(EQuestion.P_CORRECT).getValues();
+				e.setCorrect(valuesToString(values, Util.SEMI_COLON));
+			}
+			if(ses.hasProperty(EQuestion.P_POINT)) {
+				if(e.getAnswered()!= null && e.getAnswered().size() == e.getCorrect().size() && e.getAnswered().containsAll(e.getCorrect()))  {
+					log.info("val ===============" + ses.getProperty(EQuestion.P_POINT).getLong());
+					
+					e.setPoint(ses.getProperty(EQuestion.P_POINT).getLong());
+				}
+				else e.setPoint(0);
+			}
+		} catch (Exception e2) {
+			e2.printStackTrace();
+			log.info(e2.getMessage());
+			return null ;
+		}
+		return e;
+	}
+
+	private ESession getSessionProp(Node ses){
+		ESession e = new ESession();
+		try {
+			e.setId(ses.getName());
+			if(ses.hasProperty(ESession.P_TITLE)) 
+				e.setTitle(ses.getProperty(ESession.P_TITLE).getString());
+			if(ses.hasProperty(ESession.P_CAT)) 
+				e.setCat(ses.getProperty(ESession.P_CAT).getString());
+			if(ses.hasProperty(ESession.P_QUEST)) 
+			{
+				Value[] values = ses.getProperty(ESession.P_QUEST).getValues();
+				e.setQuest(valuesToString(values, Util.SEMI_COLON));
+			}
+			if(ses.hasProperty(ESession.P_DEC)) 
+				e.setDec(ses.getProperty(ESession.P_DEC).getString());
+			if(ses.hasProperty(ESession.P_RFLINK)) 
+				e.setRflink(ses.getProperty(ESession.P_RFLINK).getString());
+			if(ses.hasProperty(ESession.P_VLINK)) 
+				e.setVlink(ses.getProperty(ESession.P_VLINK).getString());
+		} catch (Exception e2) {
+			log.info(e2.getMessage());
+			return null ;
+		}
+		return e;
+	}
+
+	private Node setCategoryProp(ECategory c, Node cat){
+		try {
+			cat.setProperty(ECategory.P_NAME, c.getName());
+		} catch (Exception e2) {
+			log.info(e2.getMessage());
+			return null ;
+		}
+		return cat;
+	}
+
+	private ECategory getCategoryProp(Node cat){
+		ECategory c = new ECategory();
+		try {
+			c.setId(cat.getName());
+			if(cat.hasProperty(ECategory.P_NAME)) 
+				c.setName(cat.getProperty(ECategory.P_NAME).getString());
+		} catch (Exception e2) {
+			log.info(e2.getMessage());
+			return null ;
+		}
+		return c;
+	}
+
+	private Node getESessionHome() throws Exception {
+		Node eHome = getEStorageHome();
+		try {
+			return  eHome.getNode(Util.E_STUDY_SES);
+		} catch (PathNotFoundException e) {
+			eHome.addNode(Util.E_STUDY_SES, Util.NT_UNSTRUCTURED);
+			eHome.getSession().save();
+			return eHome.getNode(Util.E_STUDY_SES);
+		}  
+	}
+
+	private boolean isExists(String nt, String proName, String value){
+		try {
+			QueryManager qm = getEStorageHome().getSession().getWorkspace().getQueryManager();
+			Query q = qm.createQuery("SELECT "+proName+" FROM " + nt + " WHERE " + proName + " = '" + value +"'", Query.SQL);
+			return q.execute().getRows().getSize() != 0;
+		} catch (Exception e) {
+			log.info(e.getMessage());
+			return false ;
+		}
+
+
+	}
+
+
+	private SessionProvider createSessionProvider() {
+		SessionProvider provider = sessionProviderService_.getSessionProvider(null);
+		if (provider == null) {
+			//log.info("No user session provider was available, trying to use a system session provider");
+			provider = sessionProviderService_.getSystemSessionProvider(null);
+		}
+		return SessionProvider.createSystemProvider();
+	}
+
+	private String valuesToString (Value[] values, String regex) throws Exception{
+		StringBuffer sb = new StringBuffer();
+		for (Value v : values){
+			sb.append(regex).append(v.getString());
+		}
+		return sb.toString().replaceFirst(regex, "");
+	}
+
+	private Collection<String> valuesToStrings (Value[] values, String regex) throws Exception{
+		StringBuffer sb = new StringBuffer();
+		for (Value v : values){
+			sb.append(regex).append(v.getString());
+		}
+		return Arrays.asList(sb.toString().replaceFirst(regex, "").split(regex));
+	}
 	private Node getECategoryHome() throws RepositoryException, Exception {
 		Node eHome = getEStorageHome();
 		try {
@@ -85,15 +257,17 @@ public class JcrDataStorage implements DataStorage {
 
 
 	}
-
-	public SessionProvider createSessionProvider() {
-		SessionProvider provider = sessionProviderService_.getSessionProvider(null);
-		if (provider == null) {
-			log.info("No user session provider was available, trying to use a system session provider");
-			provider = sessionProviderService_.getSystemSessionProvider(null);
-		}
-		return SessionProvider.createSystemProvider();
+	private Node getEQestionHome() throws RepositoryException, Exception {
+		Node eHome = getEStorageHome();
+		try {
+			return  eHome.getNode(Util.E_STUDY_QUEST);
+		} catch (PathNotFoundException e) {
+			eHome.addNode(Util.E_STUDY_QUEST, Util.NT_UNSTRUCTURED);
+			eHome.getSession().save();
+			return eHome.getNode(Util.E_STUDY_QUEST);
+		}  
 	}
+
 
 	@Override
 	public void saveCategory(ECategory category, boolean isNew) throws ItemExistsException, Exception{
@@ -146,18 +320,21 @@ public class JcrDataStorage implements DataStorage {
 		}
 	}
 
-	private boolean isExists(String nt, String proName, String value){
+	@Override
+	public void removeCategory(String id) throws Exception {
+		Node catHome = getECategoryHome();
 		try {
-			QueryManager qm = getEStorageHome().getSession().getWorkspace().getQueryManager();
-			Query q = qm.createQuery("SELECT "+proName+" FROM " + nt + " WHERE " + proName + " = '" + value +"'", Query.SQL);
-			return q.execute().getRows().getSize() != 0;
+			Node cat = catHome.getNode(id);
+			cat.remove();
+			catHome.save();
+		} catch (PathNotFoundException e) {
 		} catch (Exception e) {
 			log.info(e.getMessage());
-			return false ;
+			throw e;
 		}
 
-
 	}
+
 	@Override
 	public void saveSession(ESession session, boolean isNew) throws ItemExistsException, Exception {
 		Node sesHome = getESessionHome();
@@ -177,74 +354,12 @@ public class JcrDataStorage implements DataStorage {
 		} 
 	}
 
-	private Node setSessionProp(ESession e, Node ses){
-		try {
-			ses.setProperty(ESession.P_TITLE, e.getTitle());
-			ses.setProperty(ESession.P_DEC, e.getDec());
-			ses.setProperty(ESession.P_RFLINK, e.getRflink());
-			ses.setProperty( ESession.P_VLINK, e.getVlink());
-		} catch (Exception e2) {
-			log.info(e2.getMessage());
-			return null ;
-		}
-		return ses;
-	}
-
-	private ESession getSessionProp(Node ses){
-		ESession e = new ESession();
-		try {
-			e.setId(ses.getName());
-			if(ses.hasProperty(ESession.P_TITLE)) 
-				e.setTitle(ses.getProperty(ESession.P_TITLE).getString());
-			e.setDec(ses.getProperty(ESession.P_DEC).getString());
-			e.setRflink(ses.getProperty(ESession.P_RFLINK).getString());
-			e.setVlink(ses.getProperty(ESession.P_VLINK).getString());
-		} catch (Exception e2) {
-			log.info(e2.getMessage());
-			return null ;
-		}
-		return e;
-	}
-
-	private Node setCategoryProp(ECategory c, Node cat){
-		try {
-			cat.setProperty(ECategory.P_NAME, c.getName());
-		} catch (Exception e2) {
-			log.info(e2.getMessage());
-			return null ;
-		}
-		return cat;
-	}
-
-	private ECategory getCategoryProp(Node cat){
-		ECategory c = new ECategory();
-		try {
-			c.setId(cat.getName());
-			if(cat.hasProperty(ECategory.P_NAME)) 
-				c.setName(cat.getProperty(ECategory.P_NAME).getString());
-		} catch (Exception e2) {
-			log.info(e2.getMessage());
-			return null ;
-		}
-		return c;
-	}
-
-	private Node getESessionHome() throws Exception {
-		Node eHome = getEStorageHome();
-		try {
-			return  eHome.getNode(Util.E_STUDY_SES);
-		} catch (PathNotFoundException e) {
-			eHome.addNode(Util.E_STUDY_SES, Util.NT_UNSTRUCTURED);
-			eHome.getSession().save();
-			return eHome.getNode(Util.E_STUDY_SES);
-		}  
-	}
 
 	@Override
 	public Collection<ESession> getSessions() throws Exception {
 		try {
-			Node catHome = getECategoryHome();
-			NodeIterator it = catHome.getNodes();
+			Node sesHome = getESessionHome();
+			NodeIterator it = sesHome.getNodes();
 			Collection<ESession> list = new ArrayList<ESession>();
 			while (it.hasNext()) {
 				list.add(getSessionProp(it.nextNode()));
@@ -258,8 +373,28 @@ public class JcrDataStorage implements DataStorage {
 
 	@Override
 	public ESession getSession(String id) throws ItemNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			Node sesHome = getESessionHome();
+			return getSessionProp(sesHome.getNode(id));
+		} catch (PathNotFoundException e) {
+			throw new ItemNotFoundException();
+		} catch (Exception e) {
+			log.info(e.getMessage());
+			return null;
+		}
+	}
+	@Override
+	public void removeSession(String id) throws Exception {
+		Node sesHome = getESessionHome();
+		try {
+			Node ses = sesHome.getNode(id);
+			ses.remove();
+			sesHome.save();
+		} catch (PathNotFoundException e) {
+		} catch (Exception e) {
+			log.info(e.getMessage());
+			throw e;
+		}
 	}
 
 	@Override
@@ -274,18 +409,71 @@ public class JcrDataStorage implements DataStorage {
 		return null;
 	}
 
+
+
+
 	@Override
-	public void removeCategory(String id) throws Exception {
-		Node catHome = getECategoryHome();
+	public void saveQuestion(EQuestion qestion, boolean isNew) throws ItemExistsException,
+	Exception {
+		Node qHome = getEQestionHome();
+		Node ques ;
+		if(isNew){
+			if(isExists(EQuestion.NT_NAME, EQuestion.P_TITLE, qestion.getTitle())) throw new ItemExistsException();
+			try {
+				ques = setQuestionProp(qestion, qHome.addNode(qestion.getId(), EQuestion.NT_NAME));
+				ques.getSession().save();
+			} catch (Exception e) {
+				log.info(e.getMessage());
+				throw e;
+			}
+		} else {
+			ques = setQuestionProp(qestion, qHome.getNode(qestion.getId()));
+			ques.save();
+		} 
+
+	}
+
+	@Override
+	public Collection<EQuestion> getQuestions() throws Exception {
+
 		try {
-			Node cat = catHome.getNode(id);
-			cat.remove();
-			catHome.save();
+			Node sesHome = getEQestionHome();
+			NodeIterator it = sesHome.getNodes();
+			Collection<EQuestion> list = new ArrayList<EQuestion>();
+			while (it.hasNext()) {
+				list.add(getQuestionProp(it.nextNode()));
+			}
+			return list;
+		} catch (Exception e){
+			log.info(e.getMessage());
+		}
+		return null;
+	}
+
+	@Override
+	public EQuestion getQuestion(String id) throws ItemNotFoundException {
+		try {
+			Node sesHome = getEQestionHome();
+			return getQuestionProp(sesHome.getNode(id));
+		} catch (PathNotFoundException e) {
+			throw new ItemNotFoundException();
+		} catch (Exception e) {
+			log.info(e.getMessage());
+			return null;
+		}
+	}
+
+	@Override
+	public void removeQuestion(String id) throws Exception {
+		Node sesHome = getEQestionHome();
+		try {
+			Node ses = sesHome.getNode(id);
+			ses.remove();
+			sesHome.save();
 		} catch (PathNotFoundException e) {
 		} catch (Exception e) {
 			log.info(e.getMessage());
 			throw e;
 		}
-
 	}
 }

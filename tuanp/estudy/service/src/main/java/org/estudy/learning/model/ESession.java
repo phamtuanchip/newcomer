@@ -1,20 +1,25 @@
 package org.estudy.learning.model;
 
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
+import java.util.Arrays;
+import java.util.Collection;
 
+import org.estudy.learning.Util;
 import org.exoplatform.services.jcr.util.IdGenerator;
 
 public class ESession {
 	public final static String PREF = "eset";
 	public final static String NT_NAME = "exo:session";
 	public final static String P_TITLE = "exo:title";
+	public final static String P_CAT = "exo:catId";
+	public final static String P_QUEST = "exo:questId";
 	public final static String P_DEC = "exo:description";
 	public final static String P_RFLINK = "exo:rflink";
 	public final static String P_VLINK = "exo:vlink";
-	
+
 	private String id;
 	private String title;
+	private String cat;
+	private Collection<String> quest;
 	private String dec;
 	private String rflink;
 	private String vlink;
@@ -22,9 +27,10 @@ public class ESession {
 	public ESession(){
 		setId(PREF + IdGenerator.generate());
 	}
-	public ESession(Node node) throws RepositoryException {
-		setId(node.getName());
-		setTitle(node.getProperty(P_TITLE).getString());
+	
+	public ESession(String title){
+		setId(PREF + IdGenerator.generate());
+		setTitle(title);
 	}
 	public String getId() {
 		return id;
@@ -55,6 +61,22 @@ public class ESession {
 	}
 	public void setVlink(String vlink) {
 		this.vlink = vlink;
+	}
+	public String getCat() {
+		return cat;
+	}
+	public void setCat(String cat) {
+		this.cat = cat;
+	}
+	public Collection<String> getQuest() {
+		return quest;
+	}
+	public void setQuest(String quest) {
+		this.quest = Arrays.asList(quest.split(Util.SEMI_COLON));
+	}
+	
+	public void setQuest(Collection<String> quest) {
+		this.quest = quest;
 	}
 
 }

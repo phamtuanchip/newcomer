@@ -24,6 +24,7 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 import org.estudy.learning.model.ECategory;
+import org.estudy.learning.model.EQuestion;
 import org.estudy.learning.model.ESession;
 import org.estudy.learning.model.ETesting;
 import org.exoplatform.services.organization.OrganizationConfig.User;
@@ -45,6 +46,13 @@ public interface DataStorage {
   public void saveSession(ESession session, boolean isNew) throws ItemExistsException, Exception;
   public Collection<ESession> getSessions() throws Exception;
   public ESession getSession(String id) throws ItemNotFoundException;
+  public void removeSession(String id) throws Exception;
+  
+  public void saveQuestion(EQuestion qestion, boolean isNew) throws ItemExistsException, Exception;
+  public Collection<EQuestion> getQuestions() throws Exception;
+  public EQuestion getQuestion(String id) throws ItemNotFoundException;
+  public void removeQuestion(String id) throws Exception;
+  
   public void saveTesting(User user) throws RepositoryException;
   public ETesting getTestingScore(String uid) throws ItemNotFoundException;
   
