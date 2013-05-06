@@ -20,53 +20,48 @@ import java.util.Collection;
 
 import org.estudy.learning.model.ESession;
 import org.estudy.learning.storage.DataStorage;
-import org.estudy.learning.storage.impl.JcrDataStorage;
+import org.estudy.ui.form.UILessionForm;
+import org.estudy.ui.portlet.EStudyPortlet;
 import org.exoplatform.portal.webui.container.UIContainer;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
 
-/**
- * Created by The eXo Platform SAS
- * Author : eXoPlatform
- *          exo@exoplatform.com
- * May 6, 2013  
- */
-
 @ComponentConfig(
-                 template =  "app:/groovy/estudy/webui/UILessionList.gtmpl", 
-                 events = {
-                     @EventConfig(listeners = UILessionList.AddLessionActionListener.class),
-                     @EventConfig(listeners = UILessionList.TestActionListener.class)
-                 }
-    )
+		template =  "app:/groovy/estudy/webui/UILessionList.gtmpl", 
+		events = {
+				@EventConfig(listeners = UILessionList.AddLessionActionListener.class),
+				@EventConfig(listeners = UILessionList.TestActionListener.class)
+		}
+		)
 
 public class UILessionList extends UIContainer {
-  Collection<ESession> list;
+	Collection<ESession> list;
 
-  public UILessionList() {
-    DataStorage service = getApplicationComponent(JcrDataStorage.class);
-    try {
-      list = service.getSessions();
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
+	public UILessionList() {
+		DataStorage service = EStudyPortlet.getDataService();
+		try {
+			list = service.getSessions();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
-  static public class AddLessionActionListener extends EventListener<UILessionList> {
-    @Override
-    public void execute(Event<UILessionList> event) throws Exception {
-      UILessionList listview = event.getSource() ;
+	static public class AddLessionActionListener extends EventListener<UILessionList> {
+		@Override
+		public void execute(Event<UILessionList> event) throws Exception {
+			UILessionList listview = event.getSource() ;
+			EStudyPortlet portlet = listview.getAncestorOfType(EStudyPortlet.class);
+			portlet.addPopup(new UILessionForm(), 600, 0);
+		}
+	}
 
-    }
-  }
+	static public class TestActionListener extends EventListener<UILessionList> {
+		@Override
+		public void execute(Event<UILessionList> event) throws Exception {
+			UILessionList listview = event.getSource() ;
 
-  static public class TestActionListener extends EventListener<UILessionList> {
-    @Override
-    public void execute(Event<UILessionList> event) throws Exception {
-      UILessionList listview = event.getSource() ;
-
-    }
-  }
+		}
+	}
 }
