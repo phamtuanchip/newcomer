@@ -222,6 +222,7 @@ public class Util {
   public static final String REMINDERS_NODE             = "reminders";                                                                               ;
 
   public static final String NT_UNSTRUCTURED            = "nt:unstructured";
+  public static final String NT_ = "nt:base";
 
   public static final String NT_FILE                    = "nt:file";
 

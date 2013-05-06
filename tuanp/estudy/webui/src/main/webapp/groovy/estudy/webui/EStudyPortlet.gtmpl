@@ -2,6 +2,5 @@
   def rcontext = _ctx.getRequestContext() ;
 %>
 <div id="EStudyPortlet" class="EStudyPortlet">
-this a sample portlet
   <% uicomponent.renderChildren(); %>
 </div>

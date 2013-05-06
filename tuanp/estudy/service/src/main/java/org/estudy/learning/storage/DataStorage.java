@@ -54,8 +54,9 @@ public interface DataStorage {
   public void removeQuestion(String id) throws Exception;
   
   public void saveTesting(User user, ETesting test, boolean isNew) throws Exception;
-  public Collection<ETesting> getTestingScore(String uId, Collection<String> tIds) throws RepositoryException;
+  public Collection<ETesting> getTestingScore(String uId, Collection<String> qIds) throws RepositoryException;
   public Collection<ETesting> getTestingScore(String uId) throws RepositoryException;
+  public void removeTesting(String uid, String id) throws Exception;
   
   
 }

@@ -16,6 +16,7 @@
  */
 package org.estudy.ui.portlet;
 
+import org.estudy.ui.view.UILessionList;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
@@ -33,6 +34,7 @@ public class EStudyPortlet extends UIPortletApplication
   
   public EStudyPortlet() throws Exception 
   {
+    addChild(new UILessionList()) ;
   }
   
   

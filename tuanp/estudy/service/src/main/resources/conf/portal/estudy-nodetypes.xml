@@ -68,18 +68,14 @@
       <propertyDefinition name="exo:note" requiredType="String" autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" multiple="false">
         <valueConstraints/>
       </propertyDefinition>
+      
+      <propertyDefinition name="exo:result" requiredType="String" autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" multiple="true">
+        <valueConstraints/>
+      </propertyDefinition>
     </propertyDefinitions>
-      <childNodeDefinitions>
-        <childNodeDefinition name="exo:question" defaultPrimaryType="exo:question" autoCreated="false" mandatory="false"
-          onParentVersion="COPY" protected="false" sameNameSiblings="false">
-          <requiredPrimaryTypes>
-            <requiredPrimaryType>exo:question</requiredPrimaryType>
-          </requiredPrimaryTypes>
-        </childNodeDefinition>        
-      </childNodeDefinitions>
-     
+    
   </nodeType>
- <nodeType  name="exo:eventAttachment" isMixin="false" hasOrderableChildNodes="false" primaryItemName="">
+ <nodeType  name="exo:attachment" isMixin="false" hasOrderableChildNodes="false" primaryItemName="">
       <supertypes>
         <supertype>nt:file</supertype>
       </supertypes>
@@ -89,6 +85,7 @@
         </propertyDefinition>        
       </propertyDefinitions>  
     </nodeType>    
+    
   <nodeType name="exo:session" isMixin="false" hasOrderableChildNodes="false">
     <supertypes>
       <supertype>nt:base</supertype>
@@ -114,14 +111,6 @@
       </propertyDefinition>
     </propertyDefinitions>
     
-     <childNodeDefinitions>
-        <childNodeDefinition name="*" defaultPrimaryType="" autoCreated="false" mandatory="false"
-          onParentVersion="COPY" protected="false" sameNameSiblings="false">
-          <requiredPrimaryTypes>
-            <requiredPrimaryType>nt:unstructured</requiredPrimaryType>
-          </requiredPrimaryTypes>
-        </childNodeDefinition>        
-      </childNodeDefinitions>
   </nodeType>
    
 </nodeTypes>

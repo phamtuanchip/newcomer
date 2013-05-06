@@ -1,11 +1,9 @@
 package org.estudy.learning.model;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.estudy.learning.Util;
 import org.exoplatform.services.jcr.util.IdGenerator;
 
 public class ETesting {
@@ -14,6 +12,7 @@ public class ETesting {
 	public final static String P_TIME = "exo:time";
 	public final static String P_NOTE= "exo:note";
 	public final static String P_POINT = "exo:point";
+	public final static String P_RESULT = "exo:result";
 
 	private String id;
 	private long time;
