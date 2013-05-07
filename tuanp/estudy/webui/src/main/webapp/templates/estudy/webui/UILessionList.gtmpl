@@ -1,7 +1,7 @@
 <%
   def rcontext = _ctx.getRequestContext() ;
 %>
-<div id="$uicomponent.id" class="UILessionList">
+<div id="UILessionList" class="UILessionList">
  <a href="#" onclick="<%=uicomponent.event("AddLession")%>" class="settingActionBar  pull-right"  rel="tooltip" data-placement="bottom" title="add new lession">
       <i class="uiIconSetting uiIconLightGray"></i>
  </a>

@@ -42,7 +42,7 @@ public class EStudyPortlet extends UIPortletApplication
 
 	public EStudyPortlet() throws Exception 
 	{
-		addChild(new UILessionList()) ;
+		addChild(UILessionList.class, null, null) ;
 		UIPopupAction uiPopup =  addChild(UIPopupAction.class, null, null) ;
 		uiPopup.setId("UIEPopupAction") ;
 		uiPopup.getChild(UIPopupWindow.class).setId("UIEPopupWindow") ;
