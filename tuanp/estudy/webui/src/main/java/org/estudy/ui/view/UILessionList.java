@@ -21,6 +21,7 @@ import java.util.Collection;
 import org.estudy.learning.model.ESession;
 import org.estudy.learning.storage.DataStorage;
 import org.estudy.ui.form.UILessionForm;
+import org.estudy.ui.popup.UIPopupContainer;
 import org.estudy.ui.portlet.EStudyPortlet;
 import org.exoplatform.portal.webui.container.UIContainer;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
@@ -53,7 +54,9 @@ public class UILessionList extends UIContainer {
     public void execute(Event<UILessionList> event) throws Exception {
       UILessionList listview = event.getSource() ;
       EStudyPortlet portlet = listview.getAncestorOfType(EStudyPortlet.class);
-      portlet.addPopup(new UILessionForm(), 600, 0);
+      UIPopupContainer uiPopupContainer = portlet.createUIComponent(UIPopupContainer.class, null, "formcontainer") ;
+      UILessionForm uiLessionForm = uiPopupContainer.addChild(UILessionForm.class, null, null) ;
+      portlet.addPopup(uiLessionForm, 600, 311);
     }
   }
 
