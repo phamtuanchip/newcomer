@@ -34,7 +34,7 @@ import org.exoplatform.webui.core.lifecycle.UIApplicationLifecycle;
 
 @ComponentConfig(
 		lifecycle = UIApplicationLifecycle.class,
-		template  = "app:/groovy/estudy/webui/EStudyPortlet.gtmpl"
+		template  = "app:/templates/estudy/webui/EStudyPortlet.gtmpl"
 		)
 public class EStudyPortlet extends UIPortletApplication 
 {

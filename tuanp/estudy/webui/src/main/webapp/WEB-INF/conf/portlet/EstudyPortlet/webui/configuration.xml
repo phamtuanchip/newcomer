@@ -2,12 +2,5 @@
   <application>
     <ui-component-root>org.estudy.ui.portlet.EStudyPortlet</ui-component-root>
     <state-manager>org.exoplatform.webui.application.portlet.ParentAppStateManager</state-manager>
-    
-    <!--  do we have to use application lifecycle listeners
-    <application-lifecycle-listeners>       
-      <listener>org.exoplatform.portal.application.PortletStatisticLifecycle</listener>
-    </application-lifecycle-listeners>
-    -->
-    
   </application>
 </webui-configuration>
